@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: 'Update Open Days for Issues'
         # If the issue is labeled a bug
-        if: contains(github.event.issue.labels.*.name, 'bug')
+        if: contains(fromJSON('["bug"]'), github.event.label.name)
         run: |
           # In order to update the item's custom field, we need to capture the project item id from the output
           PROJECT_ITEM_ID=$(gh project item-add ${{ env.PROJECT_NUMBER }} --owner "hashicorp" --url ${{ env.ITEM_URL }} --format json | jq '.id')
