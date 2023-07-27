@@ -17,9 +17,8 @@ jobs:
       # Some gh project calls take the project's ID, some take the project's number
       PROJECT_ID: "PVT_kwDOAAuecM4AFDLo"
       PROJECT_NUMBER: "188"
-      OPEN_DAYS_FIELD_ID: "unknown"
-      WAITING_DAYS_FIELD_ID: "unknown"
-      PR_FIELD_ID: "unknown"
+      OPEN_DAYS_FIELD_ID: "PVTF_lADOAAuecM4AFDLozgMQ_Nk"
+      PR_FIELD_ID: "PVTF_lADOAAuecM4AFDLozgMXQ38"
       ITEM_URL: ${{ github.event.issue.html_url }}
     steps:
       - name: 'Update Open Days for Issues'
