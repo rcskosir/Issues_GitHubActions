@@ -1,0 +1,32 @@
+---
+name: Project Board Custom Field Filler
+
+permissions:
+  issues: write
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  open_days:
+    name: "Open Days for Issue"
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Some gh project calls take the project's ID, some take the project's number
+      PROJECT_ID: "PVT_kwDOAAuecM4AFDLo"
+      PROJECT_NUMBER: "188"
+      OPEN_DAYS_FIELD_ID: "unknown"
+      WAITING_DAYS_FIELD_ID: "unknown"
+      PR_FIELD_ID: "unknown"
+      ITEM_URL: ${{ github.event.issue.html_url }}
+    steps:
+      - name: 'Update Open Days for Issues'
+        # This isn't pretty, but it ensures that we don't accidentally set the status on accident
+        if: contains(fromJSON('["opened", "ready_for_review"]'), github.event.action) && needs.community_check.outputs.maintainer == 'true' && !github.event.pull_request.draft
+        run: |
+          # In order to update the item's Status field, we need to capture the project item id from the output
+          PROJECT_ITEM_ID=$(gh project item-add ${{ env.PROJECT_NUMBER }} --owner "hashicorp" --url ${{ env.ITEM_URL }} --format json | jq '.id')
+          # Insert Open Days count into number field
+          gh project item-edit --id "$PROJECT_ITEM_ID" --field-id ${{ env.OPEN_DAYS_FIELD_ID }} --project-id ${{ env.PROJECT_ID }} --number ${{ vars.openDays }}

@@ -5,4 +5,4 @@ Open Days
 Waiting Days
 PR #
 
-Each of the appove fields can be filled with data pulled from github.
+Each of the above fields can be filled with data pulled from GitHub.

@@ -1,0 +1,20 @@
+---
+name: Issue Opened Triage
+
+permissions:
+  issues: write
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  issue_triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: github/issue-labeler@98b5412841f6c4b0b3d9c29d53c13fad16bd7de2 # v3.2
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          configuration-path: workflow/project_custom_field_filler.yml
+          enable-versioned-regex: 0
