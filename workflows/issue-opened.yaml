@@ -6,7 +6,7 @@ permissions:
 
 on:
   issues:
-    types: [opened]
+    types: [closed]
 
 jobs:
   issue_triage:
