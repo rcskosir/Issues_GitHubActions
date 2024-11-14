@@ -10,6 +10,7 @@ on:
 
 jobs:
   pull-commit-message:
+  if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
