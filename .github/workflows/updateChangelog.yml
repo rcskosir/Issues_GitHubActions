@@ -15,8 +15,14 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Runs a single command using the runners shell
+    - name: Install jq
+      run: apt-get install jq
     - name: Get changelog entry
-      run: echo "Pulling commit message from merged PR, ${{ github.event.pull_request._links.commits.href.commit.message }}"
+      run: export COMMIT_URL=${{ github.event.pull_request._links.commits.href }}
+    - name: Download commit JSON
+      run: export COMMIT_MSG=$(curl -sf $COMMIT_URL | jq .commit.message)
+    - name: Echo
+      run: echo $COMMIT_MSG
   update-changelog:
     runs-on: ubuntu-latest
     steps:
