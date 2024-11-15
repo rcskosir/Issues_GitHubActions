@@ -16,7 +16,7 @@ jobs:
     steps:
     # Runs a single command using the runners shell
     - name: Get changelog entry
-      run: echo "Pulling commit message from merged PR, ${{ github.event.pull_request.head.commit.message }}"
+      run: echo "Pulling commit message from merged PR, ${{ github.event.pull_request.commits.href.commit.message }}"
   update-changelog:
     runs-on: ubuntu-latest
     steps:
