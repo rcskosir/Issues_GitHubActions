@@ -6,7 +6,7 @@ permissions:
 on:
   pull_request_target:
     # Inputs the workflow accepts.
-    types: [closed] #and merged?
+    types: [closed]
 
 jobs:
   pull-commit-message:
