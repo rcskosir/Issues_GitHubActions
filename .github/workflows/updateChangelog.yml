@@ -10,15 +10,15 @@ on:
 
 jobs:
   pull-commit-message:
-  if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Runs a single command using the runners shell
     - name: Get changelog entry
-      run: echo "Pulling commit message from merged PR"
+      run: echo "Pulling commit message from merged PR, {{ github.event.pull_request.head.sha }}"
   update-changelog:
     runs-on: ubuntu-latest
     steps:
     - name: Update changelog
-      run: echo "Adding changelog entry to changelog.md"
+      run: echo "Adding changelog entry to changelog.md - nothing for now"
