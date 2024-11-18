@@ -16,7 +16,7 @@ jobs:
     steps:
     # Runs a single command using the runners shell
     - name: Get changelog entry
-      run: export COMMIT_URL=${{ github.event.pull_request._links.commits.href }}
+      run: export COMMIT_URL=${{ github.event.pull_request.merge_commit_sha }}
     - name: Download commit JSON
       run: export COMMIT_JSON=$(curl -sf $COMMIT_URL)
     - name: Echo
