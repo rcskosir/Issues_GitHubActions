@@ -16,9 +16,9 @@ jobs:
     steps:
     # Runs a single command using the runners shell
     - name: Get changelog entry
-      run: export COMMIT_MESSAGE= ${{ toJSON(github.event) }} 
+      run: export COMMIT_URL= ${{ github.event.pull_request.commits_url }}
     - name: Echo message
-      run: echo $COMMIT_MESSAGE
+      run: echo $COMMIT_URL
   update-changelog:
     runs-on: ubuntu-latest
     steps:
