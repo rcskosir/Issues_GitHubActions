@@ -16,11 +16,9 @@ jobs:
     steps:
     # Runs a single command using the runners shell
     - name: Get changelog entry
-      run: export COMMIT_URL=${{ github.event.pull_request.merge_commit_sha }}
-    - name: Download commit JSON
-      run: export COMMIT_JSON=$(curl -sf $COMMIT_URL)
-    - name: Echo
-      run: echo $COMMIT_JSON
+      run: export COMMIT_MESSAGE=${{ github.event.head_commit.message }}
+    - name: Echo message
+      run: echo $COMMIT_MESSAGE
   update-changelog:
     runs-on: ubuntu-latest
     steps:
