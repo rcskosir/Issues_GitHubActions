@@ -21,13 +21,10 @@ jobs:
       run: echo "COMMIT_MSG=$(curl -sf $COMMIT_URL | jq .message)" >> $GITHUB_ENV
     - name: echo out the commit message
       run: echo "$COMMIT_MSG"
-  isolate-squash-merge-commit:
-  # regex to get just the commit message, not the title
-    runs-on: ubuntu-latest
-    steps:
-    - name: split title and body
-      id: split
+    - name: splite title and body
       run: echo "::set-output name=message::${$COMMIT_MSG##*\n\n}"
+  # isolate-squash-merge-commit:
+  # regex to get just the commit message, not the title
   # check-for-changelog-entry:
   # regex to check for bug, enhancement, breaking change, feature
   update-changelog:
