@@ -16,7 +16,7 @@ jobs:
     steps:
     # Runs a single command using the runners shell
     - name: Get changelog entry
-      run: echo "${{ github.event.pull_request.merge_commit_sha }}"
+      run: echo "${{ github.event.pull_request.squash_merge_commit_message }}"
   update-changelog:
     runs-on: ubuntu-latest
     steps:
