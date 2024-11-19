@@ -16,9 +16,7 @@ jobs:
     steps:
     # Runs a single command using the runners shell
     - name: Get changelog entry
-      run: export COMMIT_MESSAGE= ${{ github.event.pull_request.squash_merge_commit_message }}
-    - name: Echo message
-      run: echo $COMMIT_MESSAGE
+      run: git log -1 --pretty=format:"%s"
   update-changelog:
     runs-on: ubuntu-latest
     steps:
