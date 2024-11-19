@@ -4,7 +4,7 @@ permissions:
   pull-requests: write
 
 on:
-  pull_request_target:
+  pull_request:
     # Inputs the workflow accepts.
     types: [closed]
 
@@ -16,9 +16,9 @@ jobs:
     steps:
     # Runs a single command using the runners shell
     - name: Get changelog entry
-      run: git log -1 --pretty=format:"%s"
+      run: echo "${{ github.event.pull_request.merge_commit_sha }}"
   update-changelog:
     runs-on: ubuntu-latest
     steps:
-    - name: Update changelog
+    - name: check for a changelog PR, if no PR, open one, append entry to PR
       run: echo "Adding changelog entry to changelog.md - nothing for now"
