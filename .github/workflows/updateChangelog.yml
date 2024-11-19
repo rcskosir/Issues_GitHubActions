@@ -20,9 +20,7 @@ jobs:
     - name: add sha to a url
       run: echo "COMMIT_URL="https://api.github.com/repos/rcskosir/Issues_GitHubActions/git/commits/$COMMIT_SHA"" >> $GITHUB_ENV
     - name: get the json from the url
-      run: echo "COMMIT_JSON=$(curl -sf $COMMIT_URL)" >> $GITHUB_ENV
-    - name: print the JSON for now
-      run: echo "$COMMIT_JSON"
+      run: echo "curl -sf $COMMIT_URL"
   update-changelog:
     runs-on: ubuntu-latest
     steps:
