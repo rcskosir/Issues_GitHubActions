@@ -21,6 +21,8 @@ jobs:
       run: echo "COMMIT_URL="https://api.github.com/repos/rcskosir/Issues_GitHubActions/git/commits/$COMMIT_SHA"" >> $GITHUB_ENV
     - name: get the json from the url
       run: echo "COMMIT_MSG=$(curl -sf $COMMIT_URL | jq .message)" >> $GITHUB_ENV
+    - name: echo out the commit message
+      run: echo "$COMMIT_MSG"
   update-changelog:
     runs-on: ubuntu-latest
     steps:
