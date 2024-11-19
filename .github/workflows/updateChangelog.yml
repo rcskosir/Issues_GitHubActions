@@ -15,8 +15,14 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Runs a single command using the runners shell
-    - name: Get changelog entry
-      run: echo "${{ github.event.pull_request.squash_merge_commit_message }}"
+    - name: Get sha of the merge commit
+      run: export COMMIT_SHA= ${{ github.event.pull_request.merge_commit_sha }}
+    - name: add sha to a url
+      run: export COMMIT_URL= $(https://api.github.com/repos/rcskosir/Issues_GitHubActions/git/commits/$COMMIT_SHA)
+    - name: get the json from the url
+      run: export COMMIT_JSON=$(curl -sf $COMMIT_URL)
+    - name: print the JSON for now
+      run: echo "$COMMIT_JSON"
   update-changelog:
     runs-on: ubuntu-latest
     steps:
