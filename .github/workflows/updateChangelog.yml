@@ -22,10 +22,14 @@ jobs:
     - name: echo out the commit message
       run: echo "$COMMIT_MSG"
    # isolate-squash-merge-commit
+    - name: setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8 #install the python needed
     - name: split title and body, save body
-      run: python COMMIT_BODY = $COMMIT_MSG.split('\n\n') >> $GITHUB_ENV
-    - name: echo out the commit message
-      run: echo "$COMMIT_BODY"
+      run: |
+        python COMMIT_BODY = $COMMIT_MSG.split('\n\n')
+        print(COMMIT_BODY)
   # check-for-changelog-entry:
   # if contains to check for bug, enhancement, breaking change, feature
   update-changelog:
