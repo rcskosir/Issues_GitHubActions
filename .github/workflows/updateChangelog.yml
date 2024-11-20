@@ -26,10 +26,12 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.8 #install the python needed
-    - name: split title and body, save body
-      run: |
-        python COMMIT_BODY = $COMMIT_MSG.split('\n\n')
-        print(COMMIT_BODY)
+    - name: Run Python Script
+      uses: jannekem/run-python-script-action@v1.7
+      with:
+          script: |
+            COMMIT_BODY = $COMMIT_MSG.split('\n\n')
+            print(COMMIT_BODY)
   # check-for-changelog-entry:
   # if contains to check for bug, enhancement, breaking change, feature
   update-changelog:
