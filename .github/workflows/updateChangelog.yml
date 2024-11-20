@@ -13,6 +13,8 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
     - name: Get sha of the merge commit
       run: echo "COMMIT_SHA="${{ github.event.pull_request.merge_commit_sha }}"" >> $GITHUB_ENV
     - name: add sha to a url
@@ -27,9 +29,7 @@ jobs:
       with:
         python-version: 3.8 #install the python needed
     - name: split title and body, save body
-      run: |
-        python COMMIT_BODY = $COMMIT_MSG.split('\n\n')
-        print(COMMIT_BODY)
+      run: python split.py
   # check-for-changelog-entry:
   # if contains to check for bug, enhancement, breaking change, feature
   update-changelog:
