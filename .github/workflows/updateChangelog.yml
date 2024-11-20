@@ -28,9 +28,12 @@ jobs:
         python-version: 3.8 #install the python needed
     - name: Run Python Script
       uses: jannekem/run-python-script-action@v1.7
+      id: script
       with:
           script: |
-            COMMIT_BODY = $COMMIT_MSG.split('\n\n')
+            import os
+            github_env = os.getenv("GITHUB_ENV")
+            COMMIT_BODY = github_env.COMMIT_MSG.split('\n\n')
             print(COMMIT_BODY)
   # check-for-changelog-entry:
   # if contains to check for bug, enhancement, breaking change, feature
