@@ -23,7 +23,7 @@ jobs:
       run: echo "$COMMIT_MSG"
     # isolate-squash-merge-commit
     - name: split title and body, save body
-      run: echo "COMMIT_BODY=$($COMMIT_MSG | tr -s '\n\n' '+' | cut -d"+" -f2)" >> $GITHUB_ENV
+      run: echo "COMMIT_BODY=$( echo "$COMMIT_MSG" | tr -s '\n\n' '+' | cut -d"+" -f2)" >> $GITHUB_ENV
     - name: echo out the commit message
       run: echo "$COMMIT_BODY"
   # check-for-changelog-entry:
