@@ -13,22 +13,19 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - run: |
-          git log --merges -1 --pretty=format:"%b"
-    # - name: Get sha of the merge commit
-    #   run: echo "COMMIT_SHA="${{ github.event.pull_request.merge_commit_sha }}"" >> $GITHUB_ENV
-    # - name: add sha to a url
-    #   run: echo "COMMIT_URL="https://api.github.com/repos/rcskosir/Issues_GitHubActions/git/commits/$COMMIT_SHA"" >> $GITHUB_ENV
-    # - name: get the json from the url, pull commit from json
-    #   run: echo "COMMIT_MSG=$(curl -sf $COMMIT_URL | jq .message)" >> $GITHUB_ENV
-    # - name: echo out the commit message
-    #   run: echo "$COMMIT_MSG"
-    # # isolate-squash-merge-commit
-    # - name: split title and body, save body
-    #   run: echo "COMMIT_BODY=$( echo "$COMMIT_MSG" | tr -s '\n\n' '+' | cut -d"+" -f2)" >> $GITHUB_ENV
-    # - name: echo out the commit message
-    #   run: echo "$COMMIT_BODY"
+    - name: Get sha of the merge commit
+      run: echo "COMMIT_SHA="${{ github.event.pull_request.merge_commit_sha }}"" >> $GITHUB_ENV
+    - name: add sha to a url
+      run: echo "COMMIT_URL="https://api.github.com/repos/rcskosir/Issues_GitHubActions/git/commits/$COMMIT_SHA"" >> $GITHUB_ENV
+    - name: get the json from the url, pull commit from json
+      run: echo "COMMIT_MSG=$(curl -sf $COMMIT_URL | jq .message)" >> $GITHUB_ENV
+    - name: echo out the commit message
+      run: echo "$COMMIT_MSG"
+   # isolate-squash-merge-commit
+    - name: split title and body, save body
+      run: python COMMIT_BODY = $COMMIT_MSG.split('\n\n') >> $GITHUB_ENV
+    - name: echo out the commit message
+      run: echo "$COMMIT_BODY"
   # check-for-changelog-entry:
   # if contains to check for bug, enhancement, breaking change, feature
   update-changelog:
