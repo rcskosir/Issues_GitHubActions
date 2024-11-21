@@ -21,7 +21,7 @@ jobs:
       run: echo "COMMIT_MSG=$(curl -sf $COMMIT_URL | jq .message)" >> $GITHUB_ENV
    # isolate-squash-merge-commit
     - name: set single delimiter instead of multiline
-      run: echo "${COMMIT_MSG//\n\n/?}"
+      run: echo "$COMMIT_MSG" | sed 's/\n\n/?/g' 
   # check-for-changelog-entry:
   # if contains to check for bug, enhancement, breaking change, feature
   update-changelog:
