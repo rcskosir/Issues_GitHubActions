@@ -19,15 +19,15 @@ jobs:
       - name: get commit message 
         id: step1
         run: echo test="$(git log --pretty="format:%b")" >> $GITHUB_OUTPUT
-  # check-for-changelog-entry:
- # changelog-entry:
+  # check-for-changelog-entry
+  changelog-entry:
     # if: ${{ contains(env.COMMIT_MSG, [BUG]) }}
-   # runs-on: ubuntu-latest
-   # needs: pull-commit-message
-    #steps:
-     # - env:
-         # COMMIT_MSG: ${{needs.pull-commit-message.outputs.message}}
-        # run: echo "$COMMIT_MSG"
+    runs-on: ubuntu-latest
+    needs: pull-commit-message
+    steps:
+      - env:
+          entry: ${{needs.pull-commit-message.outputs.message}}
+        run: echo "$entry"
   # if contains to check for bug, enhancement, breaking change, feature
   update-changelog:
     runs-on: ubuntu-latest
