@@ -14,9 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Get sha of the merge commit
-      run: echo $(git log --pretty="format:%b")
+    - name: save the merge commit message body
+      run: echo COMMIT_MSG="$(git log --pretty="format:%b")" >> $GITHUB_ENV
   # check-for-changelog-entry:
+  changelog-entry:
+    if: ${{ contains(env.COMMIT_MSG, [BUG]) }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: check if bug
+      run: echo "BUG entry"
   # if contains to check for bug, enhancement, breaking change, feature
   update-changelog:
     runs-on: ubuntu-latest
