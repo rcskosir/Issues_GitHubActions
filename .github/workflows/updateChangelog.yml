@@ -14,25 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Get sha of the merge commit
-      run: echo "COMMIT_SHA="${{ github.event.pull_request.merge_commit_sha }}"" >> $GITHUB_ENV
-    - name: add sha to a url
-      run: echo "COMMIT_URL="https://api.github.com/repos/rcskosir/Issues_GitHubActions/git/commits/$COMMIT_SHA"" >> $GITHUB_ENV
-    - name: get the json from the url, pull commit from json
-      run: echo "COMMIT_MSG=$(curl -sf $COMMIT_URL | jq .message | tr '\n' '?')" >> $GITHUB_ENV
-   # isolate-squash-merge-commit
-    - name: setup python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8 #install the python needed
-    - name: Run Python Script
-      uses: jannekem/run-python-script-action@v1.7
-      id: script
-      with:
-          script: |
-            import os
-            github_env = os.getenv("GITHUB_ENV")
-            COMMIT_BODY = COMMIT_MSG.splitline()
-            print(COMMIT_BODY)
+      run: echo "git log --pretty="format:%b""
   # check-for-changelog-entry:
   # if contains to check for bug, enhancement, breaking change, feature
   update-changelog:
