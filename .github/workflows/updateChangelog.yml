@@ -15,10 +15,9 @@ jobs:
     outputs:
       message: ${{ steps.step1.outputs.test }}
     steps:
-      - id: step1
       - uses: actions/checkout@v4
-      - name: save the merge commit message body
-        run: echo test="$(git log --pretty="format:%b")" >> $GITHUB_OUTPUT
+      - id: step1
+      - run: echo test="$(git log --pretty="format:%b")" >> $GITHUB_OUTPUT
   # check-for-changelog-entry:
   changelog-entry:
     # if: ${{ contains(env.COMMIT_MSG, [BUG]) }}
