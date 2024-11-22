@@ -13,11 +13,12 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
-      message: ${{ steps.step1.outputs.COMMIT_MSG }}
+      message: ${{ steps.step1.outputs.test }}
     steps:
-    - uses: actions/checkout@v4
-    - name: save the merge commit message body
-      run: echo COMMIT_MSG="$(git log --pretty="format:%b")" >> $GITHUB_OUTPUT
+      - id: step1
+      - uses: actions/checkout@v4
+      - name: save the merge commit message body
+        run: echo test="$(git log --pretty="format:%b")" >> $GITHUB_OUTPUT
   # check-for-changelog-entry:
   changelog-entry:
     # if: ${{ contains(env.COMMIT_MSG, [BUG]) }}
