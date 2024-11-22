@@ -13,6 +13,7 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
     - name: Get sha of the merge commit
       run: echo $(git log --pretty="format:%b")
   # check-for-changelog-entry:
