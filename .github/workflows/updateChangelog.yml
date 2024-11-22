@@ -21,12 +21,12 @@ jobs:
         run: echo test="$(git log --pretty="format:%b")" >> $GITHUB_OUTPUT
   # check-for-changelog-entry
   changelog-entry:
-    if: ${{ contains(needs.pull-commit-message.outputs.message, '[BUG]') }}
+    if: ${{ contains(needs.pull-commit-message.outputs.message, '[BUG]') || contains(needs.pull-commit-message.outputs.message, '[ENHANCEMENT]')}}
     runs-on: ubuntu-latest
     needs: pull-commit-message
     steps:
-      - name: is a BUG
-        run: echo "BUG entry"
+      - name: changelog entry opt in
+        run: echo "opted in to changelog entry"
   # if contains to check for bug, enhancement, breaking change, feature
   update-changelog:
     runs-on: ubuntu-latest
