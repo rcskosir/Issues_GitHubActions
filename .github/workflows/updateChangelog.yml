@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: changelog entry opt in
         id: in
-        run: echo "opted in to changelog entry" | bool=true
+        run: echo "opted in to changelog entry" | echo bool="true" >> $GITHUB_OUTPUT
   # if there is a changelog entry, check for PR Open
   update-changelog:
     if: needs.changelog-entry.outputs.optIn
