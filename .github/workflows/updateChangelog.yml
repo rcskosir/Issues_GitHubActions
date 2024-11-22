@@ -18,11 +18,11 @@ jobs:
       run: echo COMMIT_MSG="$(git log --pretty="format:%b")" >> $GITHUB_ENV
   # check-for-changelog-entry:
   changelog-entry:
-    if: ${{ contains(env.COMMIT_MSG, [BUG]) }}
+    # if: ${{ contains(env.COMMIT_MSG, [BUG]) }}
     runs-on: ubuntu-latest
     steps:
     - name: check if bug
-      run: echo "BUG entry"
+      run: echo "$COMMIT_MSG"
   # if contains to check for bug, enhancement, breaking change, feature
   update-changelog:
     runs-on: ubuntu-latest
