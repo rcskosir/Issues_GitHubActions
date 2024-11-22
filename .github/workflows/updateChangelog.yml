@@ -33,7 +33,7 @@ jobs:
           script: |
             import os
             github_env = os.getenv("GITHUB_ENV")
-            COMMIT_BODY = github_env.COMMIT_MSG.split('\n\n')
+            COMMIT_BODY = COMMIT_MSG.splitline()
             print(COMMIT_BODY)
   # check-for-changelog-entry:
   # if contains to check for bug, enhancement, breaking change, feature
