@@ -18,10 +18,10 @@ jobs:
     - name: add sha to a url
       run: echo "COMMIT_URL="https://api.github.com/repos/rcskosir/Issues_GitHubActions/git/commits/$COMMIT_SHA"" >> $GITHUB_ENV
     - name: get the json from the url, pull commit from json
-      run: echo "COMMIT_MSG=$(curl -sf $COMMIT_URL | jq .message)" >> $GITHUB_ENV
+      run: echo "COMMIT_MSG=$(curl -sf $COMMIT_URL | jq .message | tr '\n' '?')" >> $GITHUB_ENV
    # isolate-squash-merge-commit
     - name: set single delimiter instead of multiline
-      run: echo "$COMMIT_MSG" | tr '\n' '?'
+      run: echo "$COMMIT_MSG"
   # check-for-changelog-entry:
   # if contains to check for bug, enhancement, breaking change, feature
   update-changelog:
