@@ -13,23 +13,29 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
-      message: ${{ steps.step1.outputs.test }}
+      message: ${{ steps.pull.outputs.message }}
     steps:
       - uses: actions/checkout@v4
-      - name: get commit message 
-        id: step1
-        run: echo test="$(git log --pretty="format:%b")" >> $GITHUB_OUTPUT
+      - name: get merge commit message 
+        id: pull
+        run: echo message="$(git log --pretty="format:%b")" >> $GITHUB_OUTPUT
   # check-for-changelog-entry
   changelog-entry:
+    # if contains to check for bug, enhancement, breaking change, feature
     if: ${{ contains(needs.pull-commit-message.outputs.message, '[BUG]') || contains(needs.pull-commit-message.outputs.message, '[ENHANCEMENT]') || contains(needs.pull-commit-message.outputs.message, '[FEATURE]') || contains(needs.pull-commit-message.outputs.message, '[BREAKING]')}}
     runs-on: ubuntu-latest
     needs: pull-commit-message
+    outputs:
+      optIn: ${{ steps.in.outputs.bool }}
     steps:
       - name: changelog entry opt in
-        run: echo "opted in to changelog entry"
-  # if contains to check for bug, enhancement, breaking change, feature
+        id: in
+        run: echo "opted in to changelog entry" | bool=true
+  # if there is a changelog entry, check for PR Open
   update-changelog:
+    if: needs.changelog-entry.outputs.optIn
     runs-on: ubuntu-latest
+    needs: changelog-entry
     steps:
     - name: check for a changelog PR, if no PR, open one, append entry to PR
-      run: echo "Adding changelog entry to changelog.md - nothing for now"
+      run: echo "opted in is true, check for PR"
