@@ -21,7 +21,7 @@ jobs:
         run: echo test="$(git log --pretty="format:%b")" >> $GITHUB_OUTPUT
   # check-for-changelog-entry
   changelog-entry:
-    if: ${{ contains(needs.pull-commit-message.outputs.message, [BUG]) }}
+    if: ${{ contains(needs.pull-commit-message.outputs.message, '[BUG]') }}
     runs-on: ubuntu-latest
     needs: pull-commit-message
     steps:
