@@ -51,7 +51,7 @@ jobs:
           fi
       - name: Create pull request
         if: '!steps.check.outputs.skip'
-        run: echo "Creating a new pull request - debug" 
+        run: echo "Creating a new pull request - debug 123" 
       # if changelog PR isn't already open, open one
         #run: |
           #gh pr create -B targetBranch -H source Branch
