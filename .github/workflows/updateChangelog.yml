@@ -42,16 +42,16 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "gh pr list --json title"
           prs=$(gh pr list \
               --repo "$GITHUB_REPOSITORY" \
               --json title \
-              --jq '.[].title | select(test("xyz"))')
-          if ((prs)); then
-              echo "skip=true" >> "$GITHUB_OUTPUT"
+              --label "changelog" \
+              --jq 'length')
+          if [[  $prs -gt 0  ]]; then
+              echo "existing=true" >> "$GITHUB_OUTPUT"
           fi
       - name: Create pull request
-        if: '!steps.check.outputs.skip'
+        if: '!steps.check.outputs.existing'
         run: echo "Creating a new pull request - debug" 
       # if changelog PR isn't already open, open one
         #run: |
