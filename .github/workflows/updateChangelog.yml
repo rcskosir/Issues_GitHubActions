@@ -47,7 +47,7 @@ jobs:
               --json title \
               --label "changelog" \
               --jq 'length')
-          if (($prs > 0)); then
+          if [[  $prs -gt 0  ]]; then
               echo "existing=true" >> "$GITHUB_OUTPUT"
           fi
       - name: Create pull request
