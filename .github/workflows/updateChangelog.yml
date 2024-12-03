@@ -44,6 +44,7 @@ jobs:
         run: |
           echo "gh pr list --json title"
           prs=$(gh pr list \
+              --repo "$GITHUB_REPOSITORY" \
               --json title \
               --jq '.[].title | select(test("xyz"))')
           if ((prs)); then
