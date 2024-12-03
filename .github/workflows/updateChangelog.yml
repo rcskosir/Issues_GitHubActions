@@ -40,13 +40,12 @@ jobs:
       - name: Check if PR exists
         id: check
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "gh pr list --repo "$GITHUB_REPOSITORY" --json title"
+          echo "gh pr list --json title"
           #prs=$(gh pr list \
-              #--repo "$GITHUB_REPOSITORY" \
               #--json title \
-              #--jq '.[] | select(.title|test("xyz."))')
+              #--jq '.[].title | select(test("xyz"))')
           #if ((prs)); then
               #echo "skip=true" >> "$GITHUB_OUTPUT"
           #fi
