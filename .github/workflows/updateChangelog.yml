@@ -56,4 +56,5 @@ jobs:
       # if changelog PR isn't already open, open one
         #run: |
           #gh pr create -B targetBranch -H source Branch
-      
+      - name: Add commit message to changelog pull request
+      # at this point a PR is opened for sure, now add entry
