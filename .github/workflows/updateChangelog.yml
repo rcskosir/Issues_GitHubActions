@@ -2,6 +2,7 @@ name: Update Changelog with new commit
 
 permissions:
   pull-requests: write
+  contents: write
 
 on:
   pull_request:
