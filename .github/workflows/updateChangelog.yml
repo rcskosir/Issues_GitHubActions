@@ -79,5 +79,5 @@ jobs:
           echo -e "${{ needs.changelog-entry.outputs.entry }}\n" >> CHANGELOG.md
           git add CHANGELOG.md
           git commit -m "Update CHANGELOG.md with ${{ needs.changelog-entry.outputs.entry }}"
-          git push
+          git push --set-upstream origin automated-changelog
       
