@@ -50,10 +50,29 @@ jobs:
           if [[  $prs -gt 0  ]]; then
               echo "existing=true" >> "$GITHUB_OUTPUT"
           fi
+      - uses: actions/checkout@v4
       - name: Create pull request
+      #if changelog PR isn't already open, open one
+      #create a new PR, start with appending the release number and (unreleased)
         if: '!steps.check.outputs.existing'
-        run: echo "Creating a new pull request - debug" 
-      # if changelog PR isn't already open, open one
-        #run: |
-          #gh pr create -B targetBranch -H source Branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git checkout -b automated-changelog
+          echo -e "${{ needs.changelog-entry.pull-commit-message.outputs.message }}\n" >> CHANGELOG.md
+          echo "Creating a new pull request"
+          gh pr create \
+          --repo "$GITHUB_REPOSITORY" \
+          --base main \
+          --head automated-changelog \
+          -l "changelog" \
+          -t Changelog 
+      - name: Add commit message to changelog pull request
+      # at this point a PR is opened for sure, now add entry
+        env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "${{ needs.changelog-entry.pull-commit-message.outputs.message }}" 
+          #git checkout -b automated-changelog
+
       
