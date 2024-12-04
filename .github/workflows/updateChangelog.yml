@@ -27,6 +27,7 @@ jobs:
     needs: pull-commit-message
     outputs:
       optIn: ${{ steps.in.outputs.bool }}
+      entry: ${{  needs.pull-commit-message.outputs.message  }}
     steps:
       - name: changelog entry opt in
         id: in
@@ -72,7 +73,7 @@ jobs:
         env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "${{ needs.changelog-entry.pull-commit-message.outputs.message }}" 
+          echo "${{ needs.changelog-entry.outputs.entry }}" 
           #git checkout -b automated-changelog
 
       
