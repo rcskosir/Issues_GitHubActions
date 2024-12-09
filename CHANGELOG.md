@@ -27,3 +27,4 @@ ENHANCEMENTS:
 [BUG] fixing missing quote
 
 date (unreleased) header, Bug, Enhancement, Breaking Change, Features headers
+date (unreleased) header, Bug, Enhancement, Breaking Change, Features headers
