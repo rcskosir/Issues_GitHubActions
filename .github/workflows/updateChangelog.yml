@@ -75,7 +75,8 @@ jobs:
           --base main \
           --head automated-changelog \
           -l "changelog" \
-          -t Changelog 
+          -t "CHANGELOG.md updates" \
+          -b "changelog for next release"
       - name: Add commit message to changelog pull request
       # at this point a PR is opened for sure, now add entry
         env:
