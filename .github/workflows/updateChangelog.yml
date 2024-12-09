@@ -85,20 +85,20 @@ jobs:
           git config user.name "github-actions[bot]"
           
           # place the entry within the correct header
-          header=$(echo ${{ needs.changelog-entry.outputs.entry }} | sed -n 's/\[\(.*\)\].*/\1/p')
+          header=$(echo "${{ needs.changelog-entry.outputs.entry }}" | sed -n 's/\[\(.*\)\].*/\1/p')
 
           case $header in
             BUG)
-              sed -i "0,^BUG FIXES:$/a\${{ needs.changelog-entry.outputs.entry }}" CHANGELOG.md
+              sed -i '0,^BUG FIXES:$/a\${{ needs.changelog-entry.outputs.entry }}' CHANGELOG.md
               ;;
             ENHANCEMENT)
-              sed -i "0,^ENHANCEMENTS:$/a\${{ needs.changelog-entry.outputs.entry }}" CHANGELOG.md
+              sed -i '0,^ENHANCEMENTS:$/a\${{ needs.changelog-entry.outputs.entry }}' CHANGELOG.md
               ;;
             BREAKING)
-              sed -i "0,^BREAKING CHANGES:$/a\${{ needs.changelog-entry.outputs.entry }}" CHANGELOG.md
+              sed -i '0,^BREAKING CHANGES:$/a\${{ needs.changelog-entry.outputs.entry }}' CHANGELOG.md
               ;;
             FEATURE)
-              sed -i "0,^FEATURES:$/a\${{ needs.changelog-entry.outputs.entry }}" CHANGELOG.md
+              sed -i '0,^FEATURES:$/a\${{ needs.changelog-entry.outputs.entry }}' CHANGELOG.md
               ;;
           esac
           
