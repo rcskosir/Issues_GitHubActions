@@ -26,3 +26,4 @@ ENHANCEMENTS:
 * `azurerm_cosmosdb_account` - add support for value `EnableNoSQLFullTextSearch` in the  `capabilities.name` property ([#28114](https://github.com/hashicorp/terraform-provider-azurerm/issues/28114))
 [BUG] fixing missing quote
 
+date (unreleased) header, Bug, Enhancement, Breaking Change, Features headers
