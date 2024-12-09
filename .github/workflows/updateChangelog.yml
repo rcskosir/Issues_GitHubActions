@@ -80,6 +80,6 @@ jobs:
           git config user.name "github-actions[bot]"
           echo -e "${{ needs.changelog-entry.outputs.entry }}\n" >> CHANGELOG.md
           git add CHANGELOG.md
-          git commit -m "Update CHANGELOG.md -m "${{ needs.changelog-entry.outputs.entry }}"
+          git commit -m "Update CHANGELOG.md" -m "${{ needs.changelog-entry.outputs.entry }}"
           git push --set-upstream origin automated-changelog
       
