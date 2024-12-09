@@ -86,6 +86,7 @@ jobs:
           
           # place the entry within the correct header
           header=$(echo ${{ needs.changelog-entry.outputs.entry }} | sed -n 's/\[\(.*\)\].*/\1/p')
+
           case $header in
             BUG)
               sed -i "0,^BUG FIXES:$/a\${{ needs.changelog-entry.outputs.entry }}" CHANGELOG.md
