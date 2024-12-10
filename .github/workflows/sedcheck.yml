@@ -1,0 +1,10 @@
+name: Check sed Version
+
+on: [push]
+
+jobs:
+  check-sed-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check sed version
+        run: sed --version
