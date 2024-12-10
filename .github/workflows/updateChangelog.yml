@@ -66,7 +66,7 @@ jobs:
           git config user.name "github-actions[bot]"
           
           #new pull request for new release needs the headers all added to the top
-          FILE="CHANGELOGmd"
+          FILE="CHANGELOG.md"
           version=$(head -n 1 "$FILE")
           IFS='.' read -r major minor patch <<< "$version"
           ((minor++))
