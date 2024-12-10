@@ -64,8 +64,20 @@ jobs:
         run: |
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
+          
           #new pull request for new release needs the headers all added to the top
-          echo -e "date (unreleased) header, Bug, Enhancement, Breaking Change, Features headers" >> CHANGELOG.md
+          FILE="CHANGELOGmd"
+          version=$(head -n 1 "$FILE")
+          IFS='.' read -r major minor patch <<< "$version"
+          ((minor++))
+          new_version="${major}.$minor.${patch} (Unreleased)"
+          headers="## ${new_version}\n\n## BREAKING CHANGES\n\n## ENHANCEMENT\n\n## FEATURES\n\n## BUG FIXES\n"
+          temp_file=$(mktemp)
+          echo -e "$headers" > "$temp_file"
+          cat "$FILE" >> "$temp_file"
+          mv "$temp_file" "$FILE"
+          echo "File has been updated."
+
           git add CHANGELOG.md
           git commit -m "Update CHANGELOG.md" -m "${{ needs.changelog-entry.outputs.entry }}"
           git push --set-upstream origin automated-changelog
