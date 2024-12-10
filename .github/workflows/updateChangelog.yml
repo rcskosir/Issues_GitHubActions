@@ -68,8 +68,9 @@ jobs:
           #new pull request for new release needs the headers all added to the top
           FILE="CHANGELOG.md"
           version=$(head -n 1 "$FILE")
-          IFS='.' read -r major minor patch <<< "$version"
+          IFS='.' read major minor patch <<< "$version"
           ((minor++))
+          patch=$(echo patch | sed 's/ (.*)//')
           new_version="${major}.$minor.${patch} (Unreleased)"
           headers="${new_version}\n\nBREAKING CHANGES:\n\nENHANCEMENT:\n\nFEATURES:\n\nBUG FIXES:\n"
           temp_file=$(mktemp)
