@@ -34,7 +34,4 @@ ENHANCEMENTS:
 * `azurerm_logic_app_standard` - add support for the `public_network_access` property ([#27913](https://github.com/hashicorp/terraform-provider-azurerm/issues/27913))
 * `azurerm_search_service` - add support for the `customer_managed_key_encryption_compliance_status` property ([#27478](https://github.com/hashicorp/terraform-provider-azurerm/issues/27478))
 * `azurerm_cosmosdb_account` - add support for value `EnableNoSQLFullTextSearch` in the  `capabilities.name` property ([#28114](https://github.com/hashicorp/terraform-provider-azurerm/issues/28114))
-[BUG] fixing missing quote
 
-date (unreleased) header, Bug, Enhancement, Breaking Change, Features headers
-date (unreleased) header, Bug, Enhancement, Breaking Change, Features headers
