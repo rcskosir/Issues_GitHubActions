@@ -121,7 +121,7 @@ jobs:
             header="BREAKING CHANGES:"
           fi
 
-          input_string=$(echo $input_string | sed -e 's/^\[BUG\] //' -e 's/^\[ENHANCEMENT\] //' -e 's/^\[FEATURE\] //' -e 's/^\[BREAKING\] //')
+          input_string=$(echo $input_string | sed -e 's/^\[BUG\] //g' -e 's/^\[ENHANCEMENT\] //g' -e 's/^\[FEATURE\] //g' -e 's/^\[BREAKING\] //g')
           
           # Find the header and insert the input string under the first occurrence
           awk -v header="$header" -v input_string="$input_string" '
