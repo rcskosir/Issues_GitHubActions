@@ -80,7 +80,7 @@ jobs:
           echo "File has been updated."
 
           git add CHANGELOG.md
-          git commit -m "Update CHANGELOG.md" -m "${{ needs.changelog-entry.outputs.entry }}"
+          git commit -m "staring new changelog PR"
           git push --set-upstream origin automated-changelog
           echo "Creating a new pull request"
           gh pr create \
@@ -137,11 +137,13 @@ jobs:
           
             # After inserting the input_string, continue printing the rest of the file normally
             { print $0 }
-          ' "$changelog_file" > "$changelog_file.tmp" && mv "$changelog_file.tmp" "$changelog_file"
+          ' $changelog_file > "${changelog_file}.tmp"
+          
+          mv "${changelog_file}.tmp" $changelog_file
           
           echo "The change has been added to the changelog under the first occurrence of $header."
 
           git add CHANGELOG.md
-          git commit -m 'Update CHANGELOG.md' -m '${{ needs.changelog-entry.outputs.entry }}'
+          git commit -m 'Update changelog'
           git push --set-upstream origin automated-changelog
       
