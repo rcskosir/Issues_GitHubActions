@@ -124,7 +124,7 @@ jobs:
           #input_string=$(echo $input_string | sed -e 's/^\[BUG\] //' -e 's/^\[ENHANCEMENT\] //' -e 's/^\[FEATURE\] //' -e 's/^\[BREAKING\] //')
           
           # Find the header and insert the input string under the first occurrence
-          awk -v header="$header" -v input_string="$input_string" '
+          awk -v header=$header -v input_string=$input_string '
             BEGIN {
               found_header = 0
             }
