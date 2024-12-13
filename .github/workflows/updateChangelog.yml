@@ -103,7 +103,7 @@ jobs:
           changelog_file="CHANGELOG.md"
           
           # Extract the type (e.g., BUG or ENHANCEMENT) from the input string
-          if [[ "$input_string" =~ ^\[(BUG|ENHANCEMENT|FEATURE|BREAKING)\] ]]; then
+          if [[ $input_string =~ ^\[(BUG|ENHANCEMENT|FEATURE|BREAKING)\] ]]; then
             change_type="${BASH_REMATCH[1]}"
           else
             echo "Invalid input string format. Expected '[BUG]' or '[ENHANCEMENT]' or '[FEATURE]' or '[BREAKING]'."
@@ -145,6 +145,6 @@ jobs:
           echo "The change has been added to the changelog under the first occurrence of $header."
 
           git add CHANGELOG.md
-          git commit -m 'Update changelog'
+          git commit -m "Update changelog"
           git push --set-upstream origin automated-changelog
       
