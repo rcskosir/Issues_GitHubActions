@@ -142,6 +142,6 @@ jobs:
           echo "The change has been added to the changelog under the first occurrence of $header."
 
           git add CHANGELOG.md
-          git commit -m "Update changelog" -m "new entry added"
+          git commit -m 'Update CHANGELOG.md' -m '${{ needs.changelog-entry.outputs.entry }}'
           git push --set-upstream origin automated-changelog
       
