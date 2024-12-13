@@ -23,6 +23,7 @@ BUG FIXES:
 * `azurerm_virtual_network_gateway` - fix crash issue when specifying `root_certificate ` or `revoked_certificate` ([#28099](https://github.com/hashicorp/terraform-provider-azurerm/issues/28099))
 
 ENHANCEMENTS:
+CHANGELOG.md LICENSE README.md scripts workflows dependencies - `frontdoor` - partial update to use `2024-02-01` API [GH-28233]
 
 * dependencies - update `go-azure-sdk` to `v0.20241128.1112539` ([#28137](https://github.com/hashicorp/terraform-provider-azurerm/issues/28137))
 * `containerapps` - update api version to `2024-03-01` ([#28074](https://github.com/hashicorp/terraform-provider-azurerm/issues/28074))
