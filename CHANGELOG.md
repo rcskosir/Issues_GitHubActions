@@ -5,6 +5,7 @@ BREAKING CHANGES:
 ENHANCEMENT:
 
 FEATURES:
+CHANGELOG.md LICENSE README.md scripts workflows **New Resource**: `azurerm_cognitive_account_rai_blocklist` [GH-12345]
 
 BUG FIXES:
 [BUG] * `azurerm_storage_account` - fix error handling for `static_website` and `queue_properties` availability checks [GH-28279]
