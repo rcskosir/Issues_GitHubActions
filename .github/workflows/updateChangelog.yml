@@ -140,7 +140,6 @@ jobs:
             # After inserting the input_string, continue printing the rest of the file normally
             { print $0 }
           ' $changelog_file > "${changelog_file}.tmp"
-          
           mv "${changelog_file}.tmp" $changelog_file
           
           echo "The change has been added to the changelog under the first occurrence of $header."
