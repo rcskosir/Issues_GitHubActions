@@ -53,8 +53,21 @@ jobs:
               echo "existing=true" >> "$GITHUB_OUTPUT"
           fi
       - uses: actions/checkout@v4
-        with:
-          ref: automated-changelog
+      - name: check for branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH=automation-changelog
+          #CHANGE API CALL BELOW TO MATCH AZURE REPO
+          if gh api repos/rcskosir/Issues_GitHubActions/branches/$BRANCH > /dev/null 2>&1; then
+            echo "Branch exists on remote..."
+            git fetch origin $BRANCH
+            git checkout $BRANCH
+          else
+            echo "Branch does not exist on remote, creating locally..."
+            git checkout -b $BRANCH
+          fi
+          
       - name: Create pull request
       #if changelog PR isn't already open, open one
       #create a new PR, start with appending the release number and (unreleased)
