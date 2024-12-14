@@ -77,7 +77,6 @@ jobs:
         run: |
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git checkout automation-changelog
           
           #new pull request for new release needs the headers all added to the top
           FILE="CHANGELOG.md"
@@ -117,7 +116,6 @@ jobs:
         run: |
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git checkout automation-changelog
           
           python .github/workflows/update_changelog.py '${{ needs.changelog-entry.outputs.entry }}'
           
