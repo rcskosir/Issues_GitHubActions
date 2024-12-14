@@ -2,6 +2,7 @@ name: Update Changelog with new commit
 
 permissions:
   pull-requests: write
+  contents: write
 
 on:
   pull_request:
@@ -52,6 +53,8 @@ jobs:
               echo "existing=true" >> "$GITHUB_OUTPUT"
           fi
       - uses: actions/checkout@v4
+        with:
+          ref: automated-changelog
       - name: Create pull request
       #if changelog PR isn't already open, open one
       #create a new PR, start with appending the release number and (unreleased)
@@ -59,15 +62,40 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git checkout -b automated-changelog
-          echo -e "${{ needs.changelog-entry.outputs.entry }}\n" >> CHANGELOG.md
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          
+          #new pull request for new release needs the headers all added to the top
+          FILE="CHANGELOG.md"
+          version=$(head -n 1 "$FILE")
+          IFS='.' read major minor patch <<< "$version"
+          ((minor++))
+          patch=$(echo $patch | sed 's/ (.*)//')
+          new_version="${major}.$minor.${patch} (Unreleased)"
+          headers="${new_version}\n\nBREAKING CHANGES:\n\nENHANCEMENTS:\n\nFEATURES:\n\nBUG FIXES:\n"
+          temp_file=$(mktemp)
+          echo -e "$headers" > "$temp_file"
+          cat "$FILE" >> "$temp_file"
+          mv "$temp_file" "$FILE"
+          echo "File has been updated."
+
+          git add CHANGELOG.md
+          git commit -m "staring new changelog PR"
+          git push --set-upstream origin automated-changelog
           echo "Creating a new pull request"
           gh pr create \
           --repo "$GITHUB_REPOSITORY" \
           --base main \
           --head automated-changelog \
           -l "changelog" \
-          -t Changelog 
+          -t "CHANGELOG.md updates" \
+          -b "changelog for next release"
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4  # Set up Python environment
+        with:
+          python-version: '3.9'
+      
       - name: Add commit message to changelog pull request
       # at this point a PR is opened for sure, now add entry
         env:
@@ -75,9 +103,10 @@ jobs:
         run: |
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git checkout -b automated-changelog
-          echo -e "${{ needs.changelog-entry.outputs.entry }}\n" >> CHANGELOG.md
+          
+          python .github/workflows/update_changelog.py '${{ needs.changelog-entry.outputs.entry }}'
+          
           git add CHANGELOG.md
-          git commit -m "Update CHANGELOG.md with ${{ needs.changelog-entry.outputs.entry }}"
+          git commit -m "Update changelog"
           git push --set-upstream origin automated-changelog
       
