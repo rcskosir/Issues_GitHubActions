@@ -1,4 +1,13 @@
 import re
+import sys
+
+if len(sys.argv) < 2:
+    print("Please provide the input string as a command-line argument.")
+    sys.exit(1)
+
+input_string = sys.argv[1]  # Get the entry from the command line
+
+update_changelog(input_string)
 
 def update_changelog(input_string, changelog_file='CHANGELOG.md'):
     # Step 1: Identify the type of entry and clean the input string
@@ -47,5 +56,3 @@ def update_changelog(input_string, changelog_file='CHANGELOG.md'):
         file.writelines(new_lines)
 
     print(f"The change has been added to the changelog under {header}.")
-
-update_changelog(input_string)
