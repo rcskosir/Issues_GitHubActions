@@ -3,6 +3,7 @@
 BREAKING CHANGES:
 
 ENHANCEMENTS:
+* dependencies - `frontdoor` - partial update to use `2024-02-01` API [GH-28233]
 
 FEATURES:
 
