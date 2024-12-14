@@ -57,7 +57,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          BRANCH=automation-changelog
+          BRANCH=automated-changelog
           #CHANGE API CALL BELOW TO MATCH AZURE REPO
           if gh api repos/rcskosir/Issues_GitHubActions/branches/$BRANCH > /dev/null 2>&1; then
             echo "Branch exists on remote..."
@@ -77,7 +77,6 @@ jobs:
         run: |
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git checkout automation-changelog
           
           #new pull request for new release needs the headers all added to the top
           FILE="CHANGELOG.md"
@@ -117,7 +116,6 @@ jobs:
         run: |
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git checkout automation-changelog
           
           python .github/workflows/update_changelog.py '${{ needs.changelog-entry.outputs.entry }}'
           
