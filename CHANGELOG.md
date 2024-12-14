@@ -1,13 +1,3 @@
-## 4.13.0 (Unreleased)
-
-BREAKING CHANGES:
-
-ENHANCEMENTS:
-
-FEATURES:
-
-BUG FIXES:
-
 ## 4.12.0 (November 28, 2024)
 
 FEATURES:
