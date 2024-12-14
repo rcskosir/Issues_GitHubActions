@@ -90,6 +90,12 @@ jobs:
           -l "changelog" \
           -t "CHANGELOG.md updates" \
           -b "changelog for next release"
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4  # Set up Python environment
+        with:
+          python-version: '3.9'
+      
       - name: Add commit message to changelog pull request
       # at this point a PR is opened for sure, now add entry
         env:
@@ -98,52 +104,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
           
-          # place the entry within the correct header
-          input_string=${{ needs.changelog-entry.outputs.entry }}
-          changelog_file="CHANGELOG.md"
+          python update_changelog.py ${{ needs.changelog-entry.outputs.entry }}
           
-          # Extract the type (e.g., BUG or ENHANCEMENT) from the input string
-          if [[ $input_string =~ ^\[(BUG|ENHANCEMENT|FEATURE|BREAKING)\] ]]; then
-            change_type="${BASH_REMATCH[1]}"
-          else
-            echo "Invalid input string format. Expected '[BUG]' or '[ENHANCEMENT]' or '[FEATURE]' or '[BREAKING]'."
-            exit 1
-          fi
-          
-          # Define the header based on the change type
-          if [[ "$change_type" == "BUG" ]]; then
-            header="BUG FIXES:"
-          elif [[ "$change_type" == "ENHANCEMENT" ]]; then
-            header="ENHANCEMENTS:"
-          elif [[ "$change_type" == "FEATURE" ]]; then
-            header="FEATURES:"
-          elif [[ "$change_type" == "BREAKING" ]]; then
-            header="BREAKING CHANGES:"
-          fi
-
-          #input_string=$(echo $input_string | sed -e 's/^\[BUG\] //' -e 's/^\[ENHANCEMENT\] //' -e 's/^\[FEATURE\] //' -e 's/^\[BREAKING\] //')
-          
-          # Find the header and insert the input string under the first occurrence
-          awk -v header="$header" -v input_string="$input_string" '
-            BEGIN {
-              found_header = 0
-            }
-          
-            # Look for the first occurrence of the header
-            $0 ~ header && found_header == 0 {
-              found_header = 1
-              print $0
-              print input_string
-              next
-            }
-          
-            # After inserting the input_string, continue printing the rest of the file normally
-            { print $0 }
-          ' $changelog_file > "${changelog_file}.tmp"
-          mv "${changelog_file}.tmp" $changelog_file
-          
-          echo "The change has been added to the changelog under the first occurrence of $header."
-
           git add CHANGELOG.md
           git commit -m "Update changelog"
           git push --set-upstream origin automated-changelog
