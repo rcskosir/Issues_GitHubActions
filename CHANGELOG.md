@@ -8,6 +8,7 @@ ENHANCEMENTS:
 FEATURES:
 
 BUG FIXES:
+* `azurerm_storage_account` - fix error handling for `static_website` and `queue_properties` availability checks [GH-28279]
 
 ## 4.12.0 (November 28, 2024)
 
