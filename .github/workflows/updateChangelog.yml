@@ -57,7 +57,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          BRANCH=automation-changelog
+          BRANCH=automated-changelog
           #CHANGE API CALL BELOW TO MATCH AZURE REPO
           if gh api repos/rcskosir/Issues_GitHubActions/branches/$BRANCH > /dev/null 2>&1; then
             echo "Branch exists on remote..."
