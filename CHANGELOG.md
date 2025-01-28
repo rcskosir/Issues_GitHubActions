@@ -1,17 +1,5 @@
 ## 4.15.0 (Unreleased)
 
-ENHANCEMENTS:
-
-FEATURES:
-
-BUG FIXES:
-
-## 4.14.0 (Unreleased)
-
-ENHANCEMENTS:
-
-FEATURES:
-
-### BUG FIXES:
-* file should be found [GH-154]
+### ENHANCEMENTS:
+* checking for initial formatting and first insertion [GH-156]
 
