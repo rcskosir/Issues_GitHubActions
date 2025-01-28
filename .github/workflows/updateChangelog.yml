@@ -19,7 +19,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: get merge commit message 
         id: pull
-        run: echo message="$(git log --grep='Merge pull request' --pretty="format:%b" | grep -o '[GH-[0-9]*]')" >> $GITHUB_OUTPUT
+        run: |
+         echo pull_number="$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_OUTPUT
+         echo message="$(git log --pretty="format:%b")" >> $GITHUB_OUTPUT
+         echo message= $message + " [GH-$pull_number]"
   # check-for-changelog-entry
   changelog-entry:
     # if contains to check for bug, enhancement, feature
@@ -58,7 +61,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BRANCH=automated-changelog
-          #CHANGE API CALL BELOW TO MATCH AZURE REPO
+          #TODO CHANGE API CALL BELOW TO MATCH AZURE REPO
           if gh api repos/rcskosir/Issues_GitHubActions/branches/$BRANCH > /dev/null 2>&1; then
             echo "Branch exists on remote..."
             git fetch origin $BRANCH
