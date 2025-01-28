@@ -125,6 +125,7 @@ jobs:
           
           ls -R
   
+          
           go run .github/workflows/update_changelog.go '${{ needs.changelog-entry.outputs.entry }}'
           
           git add CHANGELOG.md
