@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 )
 
@@ -40,32 +41,59 @@ func updateChangelog(inputString string, changelogFile string) {
 	defer file.Close()
 
 	var lines []string
+	var sectionStartIdx, sectionEndIdx int
+	var inSection bool
 	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
+	for i := 0; scanner.Scan(); i++ {
+		line := scanner.Text()
+		lines = append(lines, line)
 
-	// Step 4: Find the first occurrence of the header and insert the string under it
-	headerFound := false
-	var newLines []string
-
-	for _, line := range lines {
-		newLines = append(newLines, line)
-
-		// If the header is found, insert the cleaned string after it
-		if !headerFound && strings.Contains(line, header) {
-			newLines = append(newLines, fmt.Sprintf("%s\n", cleanedString))
-			headerFound = true
+		// Check if we have found the header and begin collecting the section
+		if !inSection && strings.Contains(line, header) {
+			sectionStartIdx = i
+			inSection = true
+		}
+		// If we're in the section, keep track of where the section ends
+		if inSection && (strings.TrimSpace(line) == "") && sectionEndIdx == 0 {
+			sectionEndIdx = i
+			break
 		}
 	}
 
-	// If the header is not found, append the entry at the end of the file
+	// Step 4: Insert the entry under the header in alphabetical order
+	var newLines []string
+	headerFound := false
+	if sectionStartIdx != 0 && sectionEndIdx != 0 {
+		// Found the section, insert the new entry in sorted order
+		var sectionEntries []string
+		for _, line := range lines[sectionStartIdx+1 : sectionEndIdx] {
+			sectionEntries = append(sectionEntries, line)
+		}
+
+		// Insert the new entry in the correct position (alphabetically)
+		sectionEntries = append(sectionEntries, cleanedString)
+		sort.Strings(sectionEntries) // Sort the entries alphabetically
+
+		// Rebuild the lines with the sorted entries
+		for i := 0; i < sectionStartIdx; i++ {
+			newLines = append(newLines, lines[i])
+		}
+		newLines = append(newLines, fmt.Sprintf("### %s", header))
+		for _, entry := range sectionEntries {
+			newLines = append(newLines, entry)
+		}
+		for i := sectionEndIdx; i < len(lines); i++ {
+			newLines = append(newLines, lines[i])
+		}
+		headerFound = true
+	}
+
+	// If the header is not found, add it to the top with the new entry
 	if !headerFound {
 		fmt.Printf("Warning: '%s' not found in the changelog. Appending the entry at the top.\n", header)
-		newLines = append([]string{
-			"\n### " + header + "\n",
-			cleanedString + "\n",
-		}, newLines...)
+		newLines = append(newLines, fmt.Sprintf("\n### %s\n", header), cleanedString+"\n")
+	} else {
+		fmt.Println("Changes were added in alphabetical order.")
 	}
 
 	// Step 5: Write the updated content back to the file
@@ -78,7 +106,7 @@ func updateChangelog(inputString string, changelogFile string) {
 
 	writer := bufio.NewWriter(fileOut)
 	for _, line := range newLines {
-		_, err := writer.WriteString(line)
+		_, err := writer.WriteString(line + "\n")
 		if err != nil {
 			fmt.Println("Error writing to the file.")
 			return
