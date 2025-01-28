@@ -1,6 +1,7 @@
 ## 4.17.0 (Unreleased)
 
 ENHANCEMENTS:
+* switch back to py for testing [GH-164]
 
 FEATURES:
 
