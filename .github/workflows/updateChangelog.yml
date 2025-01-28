@@ -20,9 +20,9 @@ jobs:
       - name: get merge commit message 
         id: pull
         run: |
-         echo pull_number="$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_OUTPUT
-         echo message="$(git log --pretty="format:%b")" >> $GITHUB_OUTPUT
-         echo message= $message + " [GH-$pull_number]"
+         pull_number="$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" 
+         commit_message="$(git log --pretty="format:%b")"
+         echo message="$commit_message [GH-$pull_number]"  >> $GITHUB_OUTPUT
   # check-for-changelog-entry
   changelog-entry:
     # if contains to check for bug, enhancement, feature
