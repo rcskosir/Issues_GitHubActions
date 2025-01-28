@@ -3,9 +3,9 @@ import sys
 
 def update_changelog(input_string, changelog_file='CHANGELOG.md'):
     # Step 1: Identify the type of entry and clean the input string
-    match = re.match(r'^\[(BUG|ENHANCEMENT|FEATURE|BREAKING)\](.*)', input_string.strip())
+    match = re.match(r'^\[(BUG|ENHANCEMENT|FEATURE)\](.*)', input_string.strip())
     if not match:
-        print("Error: Input string must start with '[BUG]' or '[ENHANCEMENT]' or '[FEATURE]' or '[BREAKING]'.")
+        print("Error: Input string must start with '[BUG]' or '[ENHANCEMENT]' or '[FEATURE]'.")
         return
     
     change_type = match.group(1)
@@ -18,8 +18,7 @@ def update_changelog(input_string, changelog_file='CHANGELOG.md'):
         header = 'ENHANCEMENTS:'
     elif change_type == 'FEATURE':
         header = 'FEATURES:'
-    elif change_type == 'BREAKING':
-      header = 'BREAKING CHANGES:'
+
         
     # Step 3: Read the existing changelog file and look for the header
     with open(changelog_file, 'r') as file:

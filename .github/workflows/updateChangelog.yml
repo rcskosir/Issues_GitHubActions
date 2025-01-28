@@ -23,7 +23,7 @@ jobs:
   # check-for-changelog-entry
   changelog-entry:
     # if contains to check for bug, enhancement, breaking change, feature
-    if: ${{ contains(needs.pull-commit-message.outputs.message, '[BUG]') || contains(needs.pull-commit-message.outputs.message, '[ENHANCEMENT]') || contains(needs.pull-commit-message.outputs.message, '[FEATURE]') || contains(needs.pull-commit-message.outputs.message, '[BREAKING]')}}
+    if: ${{ contains(needs.pull-commit-message.outputs.message, '[BUG]') || contains(needs.pull-commit-message.outputs.message, '[ENHANCEMENT]') || contains(needs.pull-commit-message.outputs.message, '[FEATURE]') }}
     runs-on: ubuntu-latest
     needs: pull-commit-message
     outputs:
@@ -85,7 +85,7 @@ jobs:
           ((minor++))
           patch=$(echo $patch | sed 's/ (.*)//')
           new_version="${major}.$minor.${patch} (Unreleased)"
-          headers="${new_version}\n\nBREAKING CHANGES:\n\nENHANCEMENTS:\n\nFEATURES:\n\nBUG FIXES:\n"
+          headers="${new_version}\n\nENHANCEMENTS:\n\nFEATURES:\n\nBUG FIXES:\n"
           temp_file=$(mktemp)
           echo -e "$headers" > "$temp_file"
           cat "$FILE" >> "$temp_file"
