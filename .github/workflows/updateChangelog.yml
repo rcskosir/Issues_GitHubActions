@@ -22,7 +22,7 @@ jobs:
         run: echo message="$(git log --pretty="format:%b")" >> $GITHUB_OUTPUT
   # check-for-changelog-entry
   changelog-entry:
-    # if contains to check for bug, enhancement, breaking change, feature
+    # if contains to check for bug, enhancement, feature
     if: ${{ contains(needs.pull-commit-message.outputs.message, '[BUG]') || contains(needs.pull-commit-message.outputs.message, '[ENHANCEMENT]') || contains(needs.pull-commit-message.outputs.message, '[FEATURE]') }}
     runs-on: ubuntu-latest
     needs: pull-commit-message
@@ -92,6 +92,8 @@ jobs:
           mv "$temp_file" "$FILE"
           echo "File has been updated."
 
+          RELEASENUM="${major}.$minor.${patch}"
+
           git add CHANGELOG.md
           git commit -m "staring new changelog PR"
           git push --set-upstream origin automated-changelog
@@ -101,8 +103,8 @@ jobs:
           --base main \
           --head automated-changelog \
           -l "changelog" \
-          -t "CHANGELOG.md updates" \
-          -b "changelog for next release"
+          -t "CHANGELOG.md for $RELEASENUM" \
+          -b "Automated changelog for next release, $RELEASENUM"
       
       - name: Set up Python
         uses: actions/setup-python@v4  # Set up Python environment
