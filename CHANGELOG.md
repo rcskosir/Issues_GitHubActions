@@ -1,6 +1,7 @@
 ## 4.15.0 (Unreleased)
 
 ENHANCEMENTS:
+* `breaking` - remove `updates the template and the accepted entry type` [GH-27950]
 
 FEATURES:
 
