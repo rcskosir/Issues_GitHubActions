@@ -1,13 +1,3 @@
-## 4.14.0 (Unreleased)
-
-ENHANCEMENTS:
-* remove # from title formatting
-* removes breaking type from format and entry type
-
-FEATURES:
-
-BUG FIXES:
-
 ## 4.13.0 (December 05, 2024)
 ENHANCEMENTS:
 * `azurerm_cognitive_deployment` - support for the `dynamic_throttling_enabled` property ([#28100](https://github.com/hashicorp/terraform-provider-azurerm/issues/28100))
