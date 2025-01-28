@@ -1,6 +1,7 @@
 ## 4.14.0 (Unreleased)
 
 ENHANCEMENTS:
+* remove # from title formatting
 * removes breaking type from format and entry type
 
 FEATURES:
