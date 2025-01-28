@@ -92,6 +92,7 @@ jobs:
           mv "$temp_file" "$FILE"
           echo "File has been updated."
 
+          major=$(echo $major | sed 's/## //')
           RELEASENUM="${major}.$minor.${patch}"
 
           git add CHANGELOG.md
