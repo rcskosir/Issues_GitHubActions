@@ -4,126 +4,116 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"regexp"
-	"sort"
 	"strings"
 )
 
-func updateChangelog(inputString string, changelogFile string) {
-	// Step 1: Identify the type of entry and clean the input string
-	re := regexp.MustCompile(`^\[(BUG|ENHANCEMENT|FEATURE)\](.*)`)
-	match := re.FindStringSubmatch(strings.TrimSpace(inputString))
-	if match == nil {
-		fmt.Println("Error: Input string must start with '[BUG]' or '[ENHANCEMENT]' or '[FEATURE]'.")
-		return
-	}
-
-	changeType := match[1]
-	cleanedString := strings.TrimSpace(match[2])
-
-	// Step 2: Determine the appropriate header
-	var header string
-	switch changeType {
-	case "BUG":
-		header = "BUG FIXES:"
-	case "ENHANCEMENT":
-		header = "ENHANCEMENTS:"
-	case "FEATURE":
-		header = "FEATURES:"
-	}
-
-	// Step 3: Read the existing changelog file and look for the header
-	file, err := os.Open(changelogFile)
+// Function to read the file and parse sections
+func readFile(filePath string) (map[string][]string, error) {
+	file, err := os.Open(filePath)
 	if err != nil {
-		fmt.Println("Error: Unable to open the changelog file.")
-		return
+		return nil, fmt.Errorf("failed to open file: %v", err)
 	}
 	defer file.Close()
 
-	var lines []string
-	var sectionStartIdx, sectionEndIdx int
-	var inSection bool
+	sections := make(map[string][]string)
+	var currentSection string
+
+	// Create a scanner to read the file line by line
 	scanner := bufio.NewScanner(file)
-	for i := 0; scanner.Scan(); i++ {
+
+	for scanner.Scan() {
 		line := scanner.Text()
-		lines = append(lines, line)
 
-		// Check if we have found the header and begin collecting the section
-		if !inSection && strings.Contains(line, header) {
-			sectionStartIdx = i
-			inSection = true
-		}
-		// If we're in the section, keep track of where the section ends
-		if inSection && (strings.TrimSpace(line) == "") && sectionEndIdx == 0 {
-			sectionEndIdx = i
-			break
+		// Identify the section headers
+		if strings.HasPrefix(line, "##") {
+			// Set the current section as the version or date
+			currentSection = strings.TrimSpace(line)
+			sections[currentSection] = []string{}
+		} else if line == "FEATURES:" || line == "ENHANCEMENTS:" || line == "BUG FIXES:" {
+			// Set the current section as FEATURE, ENHANCEMENTS, or BUG FIXES
+			currentSection = line
+			if _, exists := sections[currentSection]; !exists {
+				sections[currentSection] = []string{}
+			}
+		} else if currentSection != "" {
+			// Append lines under the correct section
+			sections[currentSection] = append(sections[currentSection], line)
 		}
 	}
 
-	// Step 4: Insert the entry under the header in alphabetical order
-	var newLines []string
-	headerFound := false
-	if sectionStartIdx != 0 && sectionEndIdx != 0 {
-		// Found the section, insert the new entry in sorted order
-		var sectionEntries []string
-		for _, line := range lines[sectionStartIdx+1 : sectionEndIdx] {
-			sectionEntries = append(sectionEntries, line)
-		}
-
-		// Insert the new entry in the correct position (alphabetically)
-		sectionEntries = append(sectionEntries, cleanedString)
-		sort.Strings(sectionEntries) // Sort the entries alphabetically
-
-		// Rebuild the lines with the sorted entries
-		for i := 0; i < sectionStartIdx; i++ {
-			newLines = append(newLines, lines[i])
-		}
-		newLines = append(newLines, fmt.Sprintf("### %s", header))
-		for _, entry := range sectionEntries {
-			newLines = append(newLines, entry)
-		}
-		for i := sectionEndIdx; i < len(lines); i++ {
-			newLines = append(newLines, lines[i])
-		}
-		headerFound = true
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("failed to read the file: %v", err)
 	}
 
-	// If the header is not found, add it to the top with the new entry
-	if !headerFound {
-		fmt.Printf("Warning: '%s' not found in the changelog. Appending the entry at the top.\n", header)
-		newLines = append(newLines, fmt.Sprintf("\n### %s\n", header), cleanedString+"\n")
-	} else {
-		fmt.Println("Changes were added in alphabetical order.")
-	}
+	return sections, nil
+}
 
-	// Step 5: Write the updated content back to the file
-	fileOut, err := os.Create(changelogFile)
+// Function to append a new entry in alphabetical order
+func appendNewEntry(filePath string, section string, entry string) error {
+	// Open the file in append mode
+	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
-		fmt.Println("Error: Unable to create the changelog file.")
-		return
+		return fmt.Errorf("failed to open file for writing: %v", err)
 	}
-	defer fileOut.Close()
+	defer file.Close()
 
-	writer := bufio.NewWriter(fileOut)
-	for _, line := range newLines {
-		_, err := writer.WriteString(line + "\n")
-		if err != nil {
-			fmt.Println("Error writing to the file.")
-			return
-		}
+	// Write the section header if it's not already there
+	_, err = file.WriteString(fmt.Sprintf("\n%s:\n", section))
+	if err != nil {
+		return fmt.Errorf("failed to write section header: %v", err)
 	}
 
-	writer.Flush()
+	// Write the entry under the correct section
+	_, err = file.WriteString(fmt.Sprintf("* %s\n", entry))
+	if err != nil {
+		return fmt.Errorf("failed to write entry: %v", err)
+	}
 
-	fmt.Printf("The change has been added to the changelog under %s.\n", header)
+	return nil
+}
+
+// Function to categorize the entry based on keywords
+func categorizeEntry(entry string) string {
+	// Basic categorization based on keywords
+	switch {
+	case strings.Contains(entry, "[FEATURE]"):
+		return "FEATURES"
+	case strings.Contains(entry, "[ENHANCEMENT]"):
+		return "ENHANCEMENTS"
+	case strings.Contains(entry, "[BUG]"):
+		return "BUG FIXES"
+	}
 }
 
 func main() {
+	// Ensure there are enough arguments
 	if len(os.Args) < 2 {
-		fmt.Println("Please provide the input string as a command-line argument.")
+		fmt.Println("Usage: go run update_changelog.go \"Your changelog entry here\"")
 		return
 	}
 
-	inputString := os.Args[1] // Get the entry from the command line
-	updateChangelog(inputString, "CHANGELOG.md")
+	// Get the input string from the command-line arguments (skip the first argument)
+	input := os.Args[1]
+
+	// Specify the changelog file path
+	filePath := "CHANGELOG.md" // Replace this with the path to your changelog file
+
+	// Read the current content of the file into sections
+	sections, err := readFile(filePath)
+	if err != nil {
+		fmt.Println("Error reading file:", err)
+		return
+	}
+
+	// Categorize the entry
+	section := categorizeEntry(input)
+
+	// Append the new entry to the appropriate section
+	err = appendNewEntry(filePath, section, input)
+	if err != nil {
+		fmt.Println("Error appending new entry:", err)
+		return
+	}
+
+	fmt.Println("Changelog updated successfully!")
 }
