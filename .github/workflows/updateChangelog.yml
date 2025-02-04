@@ -17,6 +17,7 @@ jobs:
       message: ${{ steps.pull.outputs.message }}
     steps:
       - uses: actions/checkout@v4
+        continue-on-error: true
       - name: get merge commit message 
         id: pull
         run: |
@@ -35,6 +36,7 @@ jobs:
     steps:
       - name: changelog entry opt in
         id: in
+        continue-on-error: true
         run: echo "opted in to changelog entry" | echo bool="true" >> $GITHUB_OUTPUT
   # if there is a changelog entry, check for PR Open
   update-changelog:
@@ -44,6 +46,7 @@ jobs:
     steps:
       - name: Check if PR exists
         id: check
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -59,6 +62,7 @@ jobs:
       - name: check for branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
         run: |
           BRANCH=automated-changelog
           #TODO CHANGE API CALL BELOW TO MATCH AZURE REPO
@@ -77,6 +81,7 @@ jobs:
         if: '!steps.check.outputs.existing'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
         run: |
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
@@ -124,6 +129,7 @@ jobs:
       # at this point a PR is opened for sure, now add entry
         env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
         run: |
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
