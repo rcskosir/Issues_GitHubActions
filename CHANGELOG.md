@@ -3,6 +3,7 @@
 ENHANCEMENTS:
 
 FEATURES:
+* **New Data Source**: `azurerm_api_management_subscription` [GH-169]
 
 BUG FIXES:
 
