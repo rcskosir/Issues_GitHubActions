@@ -7,113 +7,122 @@ import (
 	"strings"
 )
 
-// Function to read the file and parse sections
-func readFile(filePath string) (map[string][]string, error) {
-	file, err := os.Open(filePath)
+// Function to find the header and return its index
+func findHeaderIndex(lines []string, header string) int {
+	for i, line := range lines {
+		if strings.HasPrefix(line, header) {
+			return i
+		}
+	}
+	return -1
+}
+
+// Function to append the new entry under the appropriate header in alphabetical order
+func appendUnderHeader(filePath string, newEntry, header string) error {
+	// Open the file for reading and appending
+	file, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open file: %v", err)
+		return err
 	}
 	defer file.Close()
 
-	sections := make(map[string][]string)
-	var currentSection string
-
-	// Create a scanner to read the file line by line
+	// Read the file content
+	var lines []string
 	scanner := bufio.NewScanner(file)
-
 	for scanner.Scan() {
-		line := scanner.Text()
-
-		// Identify the section headers
-		if strings.HasPrefix(line, "##") {
-			// Set the current section as the version or date
-			currentSection = strings.TrimSpace(line)
-			sections[currentSection] = []string{}
-		} else if line == "FEATURES:" || line == "ENHANCEMENTS:" || line == "BUG FIXES:" {
-			// Set the current section as FEATURE, ENHANCEMENTS, or BUG FIXES
-			currentSection = line
-			if _, exists := sections[currentSection]; !exists {
-				sections[currentSection] = []string{}
-			}
-		} else if currentSection != "" {
-			// Append lines under the correct section
-			sections[currentSection] = append(sections[currentSection], line)
-		}
+		lines = append(lines, scanner.Text())
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("failed to read the file: %v", err)
+		return err
 	}
 
-	return sections, nil
-}
+	// Find the correct header section
+	headerIndex := findHeaderIndex(lines, header)
 
-// Function to append a new entry in alphabetical order
-func appendNewEntry(filePath string, section string, entry string) error {
-	// Open the file in append mode
-	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_WRONLY, 0644)
+	// Now append the new entry under the correct header
+	// Check if the next line is empty or not for proper formatting
+	insertIndex := headerIndex + 1
+	for i := headerIndex + 1; i < len(lines); i++ {
+		// Look for the next header to break the section
+		if strings.HasPrefix(lines[i], "[") {
+			insertIndex = i
+			break
+		}
+	}
+
+	// Remove the header prefix from the new entry
+	// Trim the header prefix based on which one it matches
+	var trimmedEntry string
+	if strings.HasPrefix(newEntry, "[BUG]") {
+		trimmedEntry = strings.TrimPrefix(newEntry, "[BUG] ")
+	} else if strings.HasPrefix(newEntry, "[ENHANCEMENT]") {
+		trimmedEntry = strings.TrimPrefix(newEntry, "[ENHANCEMENT] ")
+	} else if strings.HasPrefix(newEntry, "[FEATURE]") {
+		trimmedEntry = strings.TrimPrefix(newEntry, "[FEATURE] ")
+	} else {
+		// If the entry doesn't match one of the expected headers, print an error
+		fmt.Println("Error: New entry must start with one of the headers [BUG], [ENHANCEMENT], or [FEATURE].")
+		return nil
+	}
+
+	// Insert the new entry under the header
+	var section []string
+	for i := headerIndex + 1; i < insertIndex; i++ {
+		section = append(section, lines[i])
+	}
+	section = append(section, trimmedEntry)
+
+	// Rebuild the file content
+	lines = append(lines[:headerIndex+1], append(section, lines[insertIndex:]...)...)
+
+	// Open the file for writing and overwrite the content
+	file, err = os.OpenFile(filePath, os.O_RDWR|os.O_TRUNC, 0644)
 	if err != nil {
-		return fmt.Errorf("failed to open file for writing: %v", err)
+		return err
 	}
 	defer file.Close()
 
-	// Write the section header if it's not already there
-	_, err = file.WriteString(fmt.Sprintf("\n%s:\n", section))
-	if err != nil {
-		return fmt.Errorf("failed to write section header: %v", err)
+	// Write the updated content back to the file
+	writer := bufio.NewWriter(file)
+	for _, line := range lines {
+		_, err := writer.WriteString(line + "\n")
+		if err != nil {
+			return err
+		}
 	}
-
-	// Write the entry under the correct section
-	_, err = file.WriteString(fmt.Sprintf("* %s\n", entry))
-	if err != nil {
-		return fmt.Errorf("failed to write entry: %v", err)
-	}
-
-	return nil
-}
-
-// Function to categorize the entry based on keywords
-func categorizeEntry(entry string) string {
-	// Basic categorization based on keywords
-	switch {
-	case strings.Contains(entry, "[FEATURE]"):
-		return "FEATURES"
-	case strings.Contains(entry, "[ENHANCEMENT]"):
-		return "ENHANCEMENTS"
-	case strings.Contains(entry, "[BUG]"):
-		return "BUG FIXES"
-	}
+	return writer.Flush()
 }
 
 func main() {
-	// Ensure there are enough arguments
-	if len(os.Args) < 2 {
-		fmt.Println("Usage: go run update_changelog.go \"Your changelog entry here\"")
+	if len(os.Args) != 3 {
+		fmt.Println("Usage: go run update_changelog.go CHANGELOG.md <new_entry>")
 		return
 	}
 
-	// Get the input string from the command-line arguments (skip the first argument)
-	input := os.Args[1]
+	filePath := os.Args[1]
+	newEntry := os.Args[2]
 
-	// Specify the changelog file path
-	filePath := "CHANGELOG.md" // Replace this with the path to your changelog file
+	// Validate and determine the correct header for the new entry
+	var selectedHeader string
+	if strings.HasPrefix(newEntry, "[BUG]") {
+		selectedHeader = "BUG FIXES:"
+	} else if strings.HasPrefix(newEntry, "[ENHANCEMENT]") {
+		selectedHeader = "ENHANCEMENTS:"
+	} else if strings.HasPrefix(newEntry, "[FEATURE]") {
+		selectedHeader = "FEATURES:"
+	} else {
+		// If the entry doesn't match one of the expected headers, print an error
+		fmt.Println("Error: New entry must start with one of the headers [BUG], [ENHANCEMENT], or [FEATURE].")
+		return
+	}
 
-	// Read the current content of the file into sections
-	sections, err := readFile(filePath)
+	// Call the function to append under the appropriate header
+	err := appendUnderHeader(filePath, newEntry, selectedHeader)
 	if err != nil {
-		fmt.Println("Error reading file:", err)
+		fmt.Println("Error appending to file:", err)
 		return
 	}
 
-	// Categorize the entry
-	section := categorizeEntry(input)
-
-	// Append the new entry to the appropriate section
-	err = appendNewEntry(filePath, section, input)
-	if err != nil {
-		fmt.Println("Error appending new entry:", err)
-		return
-	}
-
-	fmt.Println("Changelog updated successfully!")
+	fmt.Println("Successfully appended the new entry under the", selectedHeader, "header.")
 }
