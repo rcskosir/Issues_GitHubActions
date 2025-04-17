@@ -20,11 +20,16 @@ func findHeaderIndex(lines []string, header string) int {
 // Function to append the new entry under the appropriate header in alphabetical order
 func appendUnderHeader(filePath string, newEntry, header string) error {
 	// Open the file for reading and appending
-	file, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE, 0644)
+	file, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE, 0o644)
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			println("file open error ", err.Error())
+		}
+	}(file)
 
 	// Read the file content
 	var lines []string
@@ -54,20 +59,19 @@ func appendUnderHeader(filePath string, newEntry, header string) error {
 	// Remove the header prefix from the new entry
 	// Trim the header prefix based on which one it matches
 	var trimmedEntry string
-	if strings.HasPrefix(newEntry, "[BUG]") {
+	switch {
+	case strings.HasPrefix(newEntry, "[BUG]"):
 		trimmedEntry = strings.TrimPrefix(newEntry, "[BUG] ")
-	} else if strings.HasPrefix(newEntry, "[ENHANCEMENT]") {
+	case strings.HasPrefix(newEntry, "[ENHANCEMENT]"):
 		trimmedEntry = strings.TrimPrefix(newEntry, "[ENHANCEMENT] ")
-	} else if strings.HasPrefix(newEntry, "[FEATURE]") {
+	case strings.HasPrefix(newEntry, "[FEATURE]"):
 		trimmedEntry = strings.TrimPrefix(newEntry, "[FEATURE] ")
-	} else {
-		// If the entry doesn't match one of the expected headers, print an error
-		fmt.Println("Error: New entry must start with one of the headers [BUG], [ENHANCEMENT], or [FEATURE].")
-		return nil
+	default:
+		return fmt.Errorf("new entry must start with one of the headers [BUG], [ENHANCEMENT], or [FEATURE]")
 	}
 
 	// Insert the new entry under the header
-	var section []string
+	section := make([]string, 0)
 	for i := headerIndex + 1; i < insertIndex; i++ {
 		section = append(section, lines[i])
 	}
@@ -77,14 +81,19 @@ func appendUnderHeader(filePath string, newEntry, header string) error {
 	lines = append(lines[:headerIndex+1], append(section, lines[insertIndex:]...)...)
 
 	// Open the file for writing and overwrite the content
-	file, err = os.OpenFile(filePath, os.O_RDWR|os.O_TRUNC, 0644)
+	writtenFile, err := os.OpenFile(filePath, os.O_RDWR|os.O_TRUNC, 0o644)
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			println("file open error ", err.Error())
+		}
+	}(writtenFile)
 
 	// Write the updated content back to the file
-	writer := bufio.NewWriter(file)
+	writer := bufio.NewWriter(writtenFile)
 	for _, line := range lines {
 		_, err := writer.WriteString(line + "\n")
 		if err != nil {
@@ -105,21 +114,20 @@ func main() {
 
 	// Validate and determine the correct header for the new entry
 	var selectedHeader string
-	if strings.HasPrefix(newEntry, "[BUG]") {
+	switch {
+	case strings.HasPrefix(newEntry, "[BUG]"):
 		selectedHeader = "BUG FIXES:"
-	} else if strings.HasPrefix(newEntry, "[ENHANCEMENT]") {
+	case strings.HasPrefix(newEntry, "[ENHANCEMENT]"):
 		selectedHeader = "ENHANCEMENTS:"
-	} else if strings.HasPrefix(newEntry, "[FEATURE]") {
+	case strings.HasPrefix(newEntry, "[FEATURE]"):
 		selectedHeader = "FEATURES:"
-	} else {
-		// If the entry doesn't match one of the expected headers, print an error
+	default:
 		fmt.Println("Error: New entry must start with one of the headers [BUG], [ENHANCEMENT], or [FEATURE].")
 		return
 	}
 
 	// Call the function to append under the appropriate header
-	err := appendUnderHeader(filePath, newEntry, selectedHeader)
-	if err != nil {
+	if err := appendUnderHeader(filePath, newEntry, selectedHeader); err != nil {
 		fmt.Println("Error appending to file:", err)
 		return
 	}
