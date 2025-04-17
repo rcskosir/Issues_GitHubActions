@@ -1,6 +1,7 @@
 ## 4.17.0 (Unreleased)
 
 ENHANCEMENTS:
+* dependencies: update `go-azure-sdk` to `v0.20250409.1192141` [GH-171]
 
 FEATURES:
 * **New Data Source**: `azurerm_api_management_subscription` [GH-169]
