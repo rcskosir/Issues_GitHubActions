@@ -7,8 +7,4 @@ PR #
 
 Each of the above fields can be filled with data pulled from GitHub.
 
-Adding test code
-
-Adding code to trigger pr
-Adding code to trigger pr
 
