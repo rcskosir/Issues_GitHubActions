@@ -1,6 +1,7 @@
 ## 4.17.0 (Unreleased)
 
 ENHANCEMENTS:
+* update readme [GH-184]
 
 FEATURES:
 
