@@ -1,4 +1,4 @@
-name: Get Changelog Entry
+name: GetChangelogEntry
 
 permissions:
   pull-requests: write
@@ -26,9 +26,9 @@ jobs:
         env:
             CHANGELOG_ENTRY: ${{ steps.pull.outputs.message }}
         run: |
-            mkdir -p ./pr
-            echo $CHANGELOG_ENTRY > ./pr/changelog_entry
+            echo $CHANGELOG_ENTRY > changelog_entry.txt
       - uses: actions/upload-artifact@v4
         with:
             name: changelog_entry
-            path: pr/
+            path: changelog_entry.txt
+            overwrite: true
