@@ -1,3 +1,11 @@
+## 4.17.0 (Unreleased)
+
+ENHANCEMENTS:
+
+FEATURES:
+
+BUG FIXES:
+
 ## 4.16.0 (January 16, 2025)
 
 **NOTE:** This release contains a breaking change reverting `redisenterprise` API version from `2024-10-01` to `2024-06-01-preview` as not all regions are currently supported in the `2024-10-01` version 
