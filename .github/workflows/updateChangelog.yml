@@ -38,14 +38,8 @@ jobs:
         run: ls -la
       - name: 'Store entry'
         id: pull
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const path = require('path');
-            const temp = '${{ runner.temp }}/artifacts';
-            const changelog_entry = Number(fs.readFileSync(path.join(temp, 'changelog_entry')));
-            echo message="$changelog_entry"  >> $GITHUB_OUTPUT
+        run: |
+          echo message="$(cat changelog_entry.txt)"  >> $GITHUB_OUTPUT
   # check-for-changelog-entry
   changelog-entry:
     # if contains to check for bug, enhancement, feature
