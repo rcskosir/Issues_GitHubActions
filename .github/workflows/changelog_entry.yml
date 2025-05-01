@@ -27,7 +27,7 @@ jobs:
         env:
             CHANGELOG_ENTRY: ${{ steps.pull.outputs.message }}
         run: |
-            echo $CHANGELOG_ENTRY > changelog_entry.txt
+            echo "$CHANGELOG_ENTRY" > changelog_entry.txt
       - uses: actions/upload-artifact@v4
         with:
             name: changelog_entry
