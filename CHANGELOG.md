@@ -6,6 +6,7 @@ CHANGELOG.md LICENSE README.md scripts `azurerm_web_pubsub_custom_certificate` -
 FEATURES:
 
 BUG FIXES:
+* `azurerm_web_pubsub_custom_certificate` - no longer crashes when `custom_certificate_id` is in a different subscription [GH-182]
 CHANGELOG.md LICENSE README.md scripts split into 2 workflows, one should kick off the other [GH-179]
 
 ## 4.16.0 (January 16, 2025)
