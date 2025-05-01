@@ -4,6 +4,7 @@ ENHANCEMENTS:
 * update readme [GH-184]
 
 FEATURES:
+* **New Resource**: `azurerm_nginx_api_key` [GH-186]
 
 BUG FIXES:
 
