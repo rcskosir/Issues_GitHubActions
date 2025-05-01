@@ -1,44 +1,74 @@
-name: Update Changelog with new commit
+name: Update Changelog PR
 
 permissions:
   pull-requests: write
   contents: write
 
 on:
-  pull_request:
-    # Inputs the workflow accepts.
-    types: [closed]
+  workflow_run:
+    workflows: [Get Changelog Entry]
+    types:
+      - completed
 
 jobs:
-  pull-commit-message:
-    if: github.event.pull_request.merged == true
+  # if there is a changelog entry, check for PR Open
+  download:
     runs-on: ubuntu-latest
     outputs:
       message: ${{ steps.pull.outputs.message }}
     steps:
-      - uses: actions/checkout@v4
-        continue-on-error: true
-      - name: get merge commit message 
+      - name: 'Download artifact'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: context.payload.workflow_run.id,
+            });
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "changelog_entry"
+            })[0];
+            let download = await github.rest.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            const fs = require('fs');
+            const path = require('path');
+            const temp = '${{ runner.temp }}/artifacts';
+            if (!fs.existsSync(temp)){
+              fs.mkdirSync(temp);
+            }
+            fs.writeFileSync(path.join(temp, 'changelog_entry.zip'), Buffer.from(download.data));
+
+      - name: 'Unzip artifact'
+        run: unzip changelog_entry.zip -d "${{ runner.temp }}/artifacts"
+      - name: 'Store entry'
         id: pull
-        run: |
-         pull_number="$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" 
-         commit_message="$(git log --pretty="format:%b")"
-         echo message="$commit_message [GH-$pull_number]"  >> $GITHUB_OUTPUT
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const temp = '${{ runner.temp }}/artifacts';
+            const changelog_entry = Number(fs.readFileSync(path.join(temp, 'changelog_entry')));
+            echo message="$changelog_entry"  >> $GITHUB_OUTPUT
   # check-for-changelog-entry
   changelog-entry:
     # if contains to check for bug, enhancement, feature
-    if: ${{ contains(needs.pull-commit-message.outputs.message, '[BUG]') || contains(needs.pull-commit-message.outputs.message, '[ENHANCEMENT]') || contains(needs.pull-commit-message.outputs.message, '[FEATURE]') }}
+    if: ${{ contains(needs.download.outputs.message, '[BUG]') || contains(needs.download.outputs.message, '[ENHANCEMENT]') || contains(needs.download.outputs.message, '[FEATURE]') }}
     runs-on: ubuntu-latest
-    needs: pull-commit-message
     outputs:
       optIn: ${{ steps.in.outputs.bool }}
-      entry: ${{  needs.pull-commit-message.outputs.message  }}
+      entry: ${{  needs.download.outputs.message  }}
     steps:
       - name: changelog entry opt in
         id: in
         continue-on-error: true
         run: echo "opted in to changelog entry" | echo bool="true" >> $GITHUB_OUTPUT
-  # if there is a changelog entry, check for PR Open
+# if there is a changelog entry, check for PR Open
   update-changelog:
     if: needs.changelog-entry.outputs.optIn
     runs-on: ubuntu-latest
