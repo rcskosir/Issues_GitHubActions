@@ -5,6 +5,7 @@ ENHANCEMENTS:
 FEATURES:
 
 BUG FIXES:
+CHANGELOG.md LICENSE README.md scripts split into 2 workflows, one should kick off the other [GH-179]
 
 ## 4.16.0 (January 16, 2025)
 
