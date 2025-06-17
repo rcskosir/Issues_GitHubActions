@@ -43,7 +43,7 @@ jobs:
           while IFS= read -r line; do
             eval "entry$i=\"=\"\$line\""
             ((i++))
-          done << (grep -E "\[ENHANCEMENT\]|\[BUG\]|\[FEATURE\]" changelog_entry.txt)
+          done < <(grep -E "\[ENHANCEMENT\]|\[BUG\]|\[FEATURE\]" changelog_entry.txt)
           if [[$i -eq 0 ]]; then
             echo message="No matching entries found, end automation" >> $GITHUB_OUTPUT
           elif [[$i -eq 1 ]]; then
