@@ -39,8 +39,23 @@ jobs:
       - name: 'Store entry'
         id: pull
         run: |
-          echo message="$(cat changelog_entry.txt)"  >> $GITHUB_OUTPUT
-  # check-for-changelog-entry
+          i=0
+          while IFS= read -r line; do
+            eval "entry$i=\"=\"\$line\""
+            ((i++))
+          done << (grep -E "\[ENHANCEMENT\]|\[BUG\]|\[FEATURE\]" changelog_entry.txt)
+          if [[$i -eq 0 ]]; then
+            echo message="No matching entries found, end automation" >> $GITHUB_OUTPUT
+          elif [[$i -eq 1 ]]; then
+            echo message="$entry0"  >> $GITHUB_OUTPUT
+          else
+            echo "$i matching entries found:"
+            echo message="TODO separate variables or jobs run here?" >> $GITHUB_OUTPUT
+            for ((j=0; j<i; j++)); do
+              eval "echo \"\${entry$j}\""
+            done
+          fi
+          # check-for-changelog-entry
   changelog-entry:
     # if contains to check for bug, enhancement, feature
     if: ${{ contains(needs.download.outputs.message, '[BUG]') || contains(needs.download.outputs.message, '[ENHANCEMENT]') || contains(needs.download.outputs.message, '[FEATURE]') }}
