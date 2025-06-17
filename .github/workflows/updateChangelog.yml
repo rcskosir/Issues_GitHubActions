@@ -46,14 +46,14 @@ jobs:
           done < <(grep -E "\[ENHANCEMENT\]|\[BUG\]|\[FEATURE\]" changelog_entry.txt)
           if [[$i -eq 0 ]]; then
             echo message="No matching entries found, end automation" >> $GITHUB_OUTPUT
-          elif [[$i -eq 1 ]]; then
+          else [[$i -eq 1 ]]; then
             echo message="$entry0"  >> $GITHUB_OUTPUT
-          else
-            echo "$i matching entries found:"
-            echo message="TODO separate variables or jobs run here?" >> $GITHUB_OUTPUT
-            for ((j=0; j<i; j++)); do
-              eval "echo \"\${entry$j}\""
-            done
+          #else
+            #echo "$i matching entries found:"
+            #echo message="TODO separate variables or jobs run here?" >> $GITHUB_OUTPUT
+            #for ((j=0; j<i; j++)); do
+              #eval "echo \"\${entry$j}\""
+            #done
           fi
           # check-for-changelog-entry
   changelog-entry:
