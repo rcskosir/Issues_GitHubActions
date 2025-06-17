@@ -39,6 +39,7 @@ jobs:
       - name: 'Store entry'
         id: pull
         run: |
+          #!/bin/bash
           i=0
           grep -E "\[ENHANCEMENT\]|\[BUG\]|\[FEATURE\]" changelog_entry.txt | while IFS= read -r line; do
             eval "entry$i=\"\$line\""
