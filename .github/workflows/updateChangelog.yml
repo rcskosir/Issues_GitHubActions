@@ -40,10 +40,10 @@ jobs:
         id: pull
         run: |
           i=0
-          while IFS= read -r line; do
+          grep -E "\[ENHANCEMENT\]|\[BUG\]|\[FEATURE\]" changelog_entry.txt | while IFS= read -r line; do
             eval "entry$i=\"\$line\""
             ((i++))
-          done < <(grep -E "\[ENHANCEMENT\]|\[BUG\]|\[FEATURE\]" changelog_entry.txt)
+          done
           if [[$i -eq 0 ]]; then
             echo message="No matching entries found, end automation" >> $GITHUB_OUTPUT
           #else [[$i -eq 1 ]]; then
