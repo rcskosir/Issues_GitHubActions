@@ -27,18 +27,18 @@ func readEntriesFromFile(filePath string) ([]ChangelogEntry, error) {
 		line := scanner.Text()
 		var entryType, trimmedContent string
 
-		if strings.HasPrefix(line, "[BUG]") {
+		if strings.Contains(line, "[BUG]") {
 			entryType = "BUG FIXES:"
 			trimmedContent = strings.TrimPrefix(line, "[BUG]")
-		} else if strings.HasPrefix(line, "[ENHANCEMENT]") {
+		} else if strings.Contains(line, "[ENHANCEMENT]") {
 			entryType = "ENHANCEMENTS:"
 			trimmedContent = strings.TrimPrefix(line, "[ENHANCEMENT]")
-		} else if strings.HasPrefix(line, "[FEATURE]") {
+		} else if strings.Contains(line, "[FEATURE]") {
 			entryType = "FEATURES:"
 			trimmedContent = strings.TrimPrefix(line, "[FEATURE]")
 		} else {
 			// Skip lines that don't match the expected format
-			fmt.Printf("Warning: Skipping line with invalid format in entries file: %s\n", line)
+			fmt.Printf("Skipping line with invalid format in entries file: %s\n", line)
 			continue
 		}
 		entries = append(entries, ChangelogEntry{Type: entryType, Content: strings.TrimSpace(trimmedContent)})
