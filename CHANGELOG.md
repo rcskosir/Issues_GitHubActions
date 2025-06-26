@@ -1,6 +1,7 @@
 ## 4.17.0 (Unreleased)
 
 ENHANCEMENTS:
+* moved GH-num to front, changed validation from hasPrefix to contains due to that move
 * moving checkout actions earlier, and printing directory to help locate [GH-205]
 
 FEATURES:
