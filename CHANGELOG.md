@@ -1,10 +1,12 @@
 ## 4.17.0 (Unreleased)
 
 ENHANCEMENTS:
+* entry 1
 
 FEATURES:
 
 BUG FIXES:
+* entry 2 [GH-218]
 
 ## 4.16.0 (January 16, 2025)
 
