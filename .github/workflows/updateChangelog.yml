@@ -34,12 +34,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           run-id: ${{ steps.get-run-id.outputs.run-id }}
-      - name: Show downloaded files
-        run: ls -la
-  update-changelog:
-    needs: [download]
-    runs-on: ubuntu-latest
-    steps:
       - name: Check if PR exists
         id: check
         continue-on-error: true
@@ -122,7 +116,6 @@ jobs:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
         run: |
-          echo cat changelog_entry.txt
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
           
