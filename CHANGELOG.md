@@ -1,10 +1,13 @@
 ## 4.17.0 (Unreleased)
 
 ENHANCEMENTS:
+[GH-208][ENHANCEMENT] * testing 3 entries
 
 FEATURES:
+* deleted branch, checking on contains
 
 BUG FIXES:
+* moved GH-num to front, changed validation from hasPrefix to contains due to that move
 
 ## 4.16.0 (January 16, 2025)
 
