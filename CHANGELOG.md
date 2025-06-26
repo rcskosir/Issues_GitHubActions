@@ -1,6 +1,7 @@
 ## 4.17.0 (Unreleased)
 
 ENHANCEMENTS:
+* moving checkout actions earlier, and printing directory to help locate [GH-205]
 
 FEATURES:
 
