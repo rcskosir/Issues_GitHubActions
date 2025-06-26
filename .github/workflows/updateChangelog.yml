@@ -12,7 +12,7 @@ on:
 
 jobs:
   # if there is a changelog entry, check for PR Open
-  download:
+  update-changelog:
     runs-on: ubuntu-latest
     outputs:
       message: ${{ steps.pull.outputs.message }}
@@ -31,6 +31,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: changelog_entry # Match name used in changelog_entry.yml upload artifact step
+          path: . # Download to the current working directory of this job
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           run-id: ${{ steps.get-run-id.outputs.run-id }}
@@ -119,7 +120,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
           
-          go run .github/workflows/update_changelog.go CHANGELOG.md changelog_entry.txt
+          go run ./.github/workflows/update_changelog.go CHANGELOG.md changelog_entry.txt
           
           git add CHANGELOG.md
           git commit -m "Update changelog"
