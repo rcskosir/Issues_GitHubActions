@@ -21,7 +21,7 @@ jobs:
         run: |
          pull_number="$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" 
          commit_message="$(git log --pretty="format:%b")"
-         echo "$commit_message [GH-$pull_number]"  >> changelog_entry.txt
+         echo "[GH-$pull_number]$commit_message"  >> changelog_entry.txt
       - uses: actions/upload-artifact@v4
         with:
             name: changelog_entry
