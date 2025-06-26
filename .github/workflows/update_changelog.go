@@ -7,97 +7,116 @@ import (
 	"strings"
 )
 
-// Function to find the header and return its index
-func findHeaderIndex(lines []string, header string) int {
-	for i, line := range lines {
-		if strings.HasPrefix(line, header) {
-			return i
-		}
-	}
-	return -1
+// ChangelogEntry represents a single entry from the input file.
+type ChangelogEntry struct {
+	Type    string // e.g., "BUG FIXES:", "ENHANCEMENTS:", "FEATURES:"
+	Content string // The actual text of the entry
 }
 
-// Function to append the new entry under the appropriate header in alphabetical order
-func appendUnderHeader(filePath string, newEntry, header string) error {
-	// Open the file for reading and appending
-	file, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE, 0o644)
+// readEntriesFromFile reads and parses entries from the specified text file.
+func readEntriesFromFile(filePath string) ([]ChangelogEntry, error) {
+	file, err := os.OpenFile(filePath, os.O_RDONLY, 0o644)
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("error opening entries file: %w", err)
 	}
-	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-			println("file open error ", err.Error())
-		}
-	}(file)
+	defer file.Close()
 
-	// Read the file content
-	var lines []string
+	var entries []ChangelogEntry
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		line := scanner.Text()
+		var entryType, trimmedContent string
+
+		if strings.HasPrefix(line, "[BUG]") {
+			entryType = "BUG FIXES:"
+			trimmedContent = strings.TrimPrefix(line, "[BUG]")
+		} else if strings.HasPrefix(line, "[ENHANCEMENT]") {
+			entryType = "ENHANCEMENTS:"
+			trimmedContent = strings.TrimPrefix(line, "[ENHANCEMENT]")
+		} else if strings.HasPrefix(line, "[FEATURE]") {
+			entryType = "FEATURES:"
+			trimmedContent = strings.TrimPrefix(line, "[FEATURE]")
+		} else {
+			// Skip lines that don't match the expected format
+			fmt.Printf("Warning: Skipping line with invalid format in entries file: %s\n", line)
+			continue
+		}
+		entries = append(entries, ChangelogEntry{Type: entryType, Content: strings.TrimSpace(trimmedContent)})
 	}
 
 	if err := scanner.Err(); err != nil {
-		return err
+		return nil, fmt.Errorf("error reading entries file: %w", err)
 	}
+	return entries, nil
+}
 
-	// Find the correct header section
-	headerIndex := findHeaderIndex(lines, header)
-
-	// Now append the new entry under the correct header
-	// Check if the next line is empty or not for proper formatting
-	insertIndex := headerIndex + 1
-	for i := headerIndex + 1; i < len(lines); i++ {
-		// Look for the next header to break the section
-		if strings.HasPrefix(lines[i], "[") {
-			insertIndex = i
-			break
-		}
-	}
-
-	// Remove the header prefix from the new entry
-	// Trim the header prefix based on which one it matches
-	var trimmedEntry string
-	switch {
-	case strings.HasPrefix(newEntry, "[BUG]"):
-		trimmedEntry = strings.TrimPrefix(newEntry, "[BUG] ")
-	case strings.HasPrefix(newEntry, "[ENHANCEMENT]"):
-		trimmedEntry = strings.TrimPrefix(newEntry, "[ENHANCEMENT] ")
-	case strings.HasPrefix(newEntry, "[FEATURE]"):
-		trimmedEntry = strings.TrimPrefix(newEntry, "[FEATURE] ")
-	default:
-		return fmt.Errorf("new entry must start with one of the headers [BUG], [ENHANCEMENT], or [FEATURE]")
-	}
-
-	// Insert the new entry under the header
-	section := make([]string, 0)
-	for i := headerIndex + 1; i < insertIndex; i++ {
-		section = append(section, lines[i])
-	}
-	section = append(section, trimmedEntry)
-
-	// Rebuild the file content
-	lines = append(lines[:headerIndex+1], append(section, lines[insertIndex:]...)...)
-
-	// Open the file for writing and overwrite the content
-	writtenFile, err := os.OpenFile(filePath, os.O_RDWR|os.O_TRUNC, 0o644)
+// updateChangelog processes the changelog file based on new entries.
+func updateChangelog(changelogFilePath string, newEntries []ChangelogEntry) error {
+	// Read current changelog content
+	changelogFile, err := os.OpenFile(changelogFilePath, os.O_RDWR|os.O_CREATE, 0o644)
 	if err != nil {
-		return err
+		return fmt.Errorf("error opening changelog file: %w", err)
 	}
-	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-			println("file open error ", err.Error())
-		}
-	}(writtenFile)
+	defer changelogFile.Close()
 
-	// Write the updated content back to the file
-	writer := bufio.NewWriter(writtenFile)
-	for _, line := range lines {
+	var currentChangelogLines []string
+	scanner := bufio.NewScanner(changelogFile)
+	for scanner.Scan() {
+		currentChangelogLines = append(currentChangelogLines, scanner.Text())
+	}
+	if err := scanner.Err(); err != nil {
+		return fmt.Errorf("error reading changelog file: %w", err)
+	}
+
+	// Create a map to group new entries by their type
+	entriesToInsert := make(map[string][]string)
+	for _, entry := range newEntries {
+		entriesToInsert[entry.Type] = append(entriesToInsert[entry.Type], entry.Content)
+	}
+
+	var updatedLines []string
+	insertedHeaders := make(map[string]bool) // To track if a header's entries have been inserted
+
+	for i := 0; i < len(currentChangelogLines); i++ {
+		line := currentChangelogLines[i]
+		updatedLines = append(updatedLines, line) // Add the current line
+
+		// Check if the current line is a header we care about
+		for header := range entriesToInsert {
+			if strings.HasPrefix(line, header) && !insertedHeaders[header] {
+				// Insert all entries for this header immediately after the header line
+				for _, entryContent := range entriesToInsert[header] {
+					updatedLines = append(updatedLines, entryContent)
+				}
+				insertedHeaders[header] = true // Mark as inserted
+				break // Only one header match per line
+			}
+		}
+	}
+
+	// Handle headers that were not found in the original changelog, similar to Python's behavior (prepend)
+	for header, entries := range entriesToInsert {
+		if !insertedHeaders[header] {
+			// Prepend the header and its entries to the beginning of the file content
+			// This might not be ideal for all changelog formats, but matches the Python script's logic
+			prependLines := []string{"", fmt.Sprintf("### %s", header)} // Add empty line and then formatted header
+			for _, entryContent := range entries {
+				prependLines = append(prependLines, entryContent)
+			}
+			updatedLines = append(prependLines, updatedLines...)
+			insertedHeaders[header] = true
+		}
+	}
+
+	// Overwrite the changelog file with updated content
+	changelogFile.Seek(0, 0)    // Reset file pointer to beginning
+	changelogFile.Truncate(0) // Clear existing content
+
+	writer := bufio.NewWriter(changelogFile)
+	for _, line := range updatedLines {
 		_, err := writer.WriteString(line + "\n")
 		if err != nil {
-			return err
+			return fmt.Errorf("error writing to changelog file: %w", err)
 		}
 	}
 	return writer.Flush()
@@ -105,32 +124,28 @@ func appendUnderHeader(filePath string, newEntry, header string) error {
 
 func main() {
 	if len(os.Args) != 3 {
-		fmt.Println("Usage: go run update_changelog.go CHANGELOG.md <new_entry>")
+		fmt.Println("Usage: go run update_changelog.go CHANGELOG.md <new_entries_file.txt>")
+		os.Exit(1)
+	}
+
+	changelogFilePath := os.Args[1]
+	entriesFilePath := os.Args[2]
+
+	newEntries, err := readEntriesFromFile(entriesFilePath)
+	if err != nil {
+		fmt.Println("Error reading new entries:", err)
+		os.Exit(1)
+	}
+
+	if len(newEntries) == 0 {
+		fmt.Println("No valid entries found in the entries file. No updates made to CHANGELOG.md.")
 		return
 	}
 
-	filePath := os.Args[1]
-	newEntry := os.Args[2]
-
-	// Validate and determine the correct header for the new entry
-	var selectedHeader string
-	switch {
-	case strings.HasPrefix(newEntry, "[BUG]"):
-		selectedHeader = "BUG FIXES:"
-	case strings.HasPrefix(newEntry, "[ENHANCEMENT]"):
-		selectedHeader = "ENHANCEMENTS:"
-	case strings.HasPrefix(newEntry, "[FEATURE]"):
-		selectedHeader = "FEATURES:"
-	default:
-		fmt.Println("Error: New entry must start with one of the headers [BUG], [ENHANCEMENT], or [FEATURE].")
-		return
+	if err := updateChangelog(changelogFilePath, newEntries); err != nil {
+		fmt.Println("Error updating changelog:", err)
+		os.Exit(1)
 	}
 
-	// Call the function to append under the appropriate header
-	if err := appendUnderHeader(filePath, newEntry, selectedHeader); err != nil {
-		fmt.Println("Error appending to file:", err)
-		return
-	}
-
-	fmt.Println("Successfully appended the new entry under the", selectedHeader, "header.")
+	fmt.Println("Successfully updated CHANGELOG.md with entries from", entriesFilePath)
 }
