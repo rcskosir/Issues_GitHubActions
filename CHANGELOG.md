@@ -1,6 +1,7 @@
 ## 4.17.0 (Unreleased)
 
 ENHANCEMENTS:
+* testing 0 entries [GH-212]
 
 FEATURES:
 
