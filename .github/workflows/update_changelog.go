@@ -25,11 +25,25 @@ func readEntryAndPRFromFile(filePath string) ([]ChangelogEntry, string, error) {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	var fullEntryLine string
-	if scanner.Scan() {
-		fullEntryLine = scanner.Text()
-	} else {
-		return nil, "", fmt.Errorf("entries file is empty or could not be read")
+	for scanner.Scan() {
+		line := scanner.Text()
+		var entryType, trimmedContent string
+
+		if strings.HasPrefix(line, "[BUG]") {
+			entryType = "BUG FIXES:"
+			trimmedContent = strings.TrimPrefix(line, "[BUG]")
+		} else if strings.HasPrefix(line, "[ENHANCEMENT]") {
+			entryType = "ENHANCEMENTS:"
+			trimmedContent = strings.TrimPrefix(line, "[ENHANCEMENT]")
+		} else if strings.HasPrefix(line, "[FEATURE]") {
+			entryType = "FEATURES:"
+			trimmedContent = strings.TrimPrefix(line, "[FEATURE]")
+		} else {
+			// Skip lines that don't match the expected format
+			fmt.Printf("Skipping line with invalid format in entries file: %s\n", line)
+			continue
+		}
+		entries = append(entries, ChangelogEntry{Type: entryType, Content: strings.TrimSpace(trimmedContent)})
 	}
 
 	if err := scanner.Err(); err != nil {
