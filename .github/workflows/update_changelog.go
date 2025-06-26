@@ -27,13 +27,13 @@ func readEntriesFromFile(filePath string) ([]ChangelogEntry, error) {
 		line := scanner.Text()
 		var entryType, trimmedContent string
 
-		if strings.Contains(line, "[BUG]") {
+		if strings.HasPrefix(line, "[BUG]") {
 			entryType = "BUG FIXES:"
 			trimmedContent = strings.TrimPrefix(line, "[BUG]")
-		} else if strings.Contains(line, "[ENHANCEMENT]") {
+		} else if strings.HasPrefix(line, "[ENHANCEMENT]") {
 			entryType = "ENHANCEMENTS:"
 			trimmedContent = strings.TrimPrefix(line, "[ENHANCEMENT]")
-		} else if strings.Contains(line, "[FEATURE]") {
+		} else if strings.HasPrefix(line, "[FEATURE]") {
 			entryType = "FEATURES:"
 			trimmedContent = strings.TrimPrefix(line, "[FEATURE]")
 		} else {
