@@ -36,7 +36,6 @@ jobs:
           run-id: ${{ steps.get-run-id.outputs.run-id }}
       - name: Show downloaded files
         run: ls -la
-#check for PR Open
   update-changelog:
     runs-on: ubuntu-latest
     steps:
