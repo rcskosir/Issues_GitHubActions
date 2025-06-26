@@ -1,6 +1,7 @@
 ## 4.17.0 (Unreleased)
 
 ENHANCEMENTS:
+* moved GH-num to front, changed validation from hasPrefix to contains due to that move [GH-210]
 
 FEATURES:
 
