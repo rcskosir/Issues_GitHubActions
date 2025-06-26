@@ -37,6 +37,7 @@ jobs:
       - name: Show downloaded files
         run: ls -la
   update-changelog:
+    needs: [download]
     runs-on: ubuntu-latest
     steps:
       - name: Check if PR exists
