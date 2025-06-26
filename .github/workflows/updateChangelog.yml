@@ -17,7 +17,7 @@ jobs:
     outputs:
       message: ${{ steps.pull.outputs.message }}
     steps:
-      - name: Get run ID of "Test" workflow
+      - name: Get run ID of "GetChangelogEntry" workflow
         id: get-run-id
         run: |
           OTHER_REPO="${{ github.repository }}"
@@ -27,6 +27,13 @@ jobs:
           echo "run-id=${RUN_ID}" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout repository # Checkout the repository first to establish the working directory
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }} # Explicitly specify the repository
+          ref: main # Explicitly checkout the main branch
+
       - name: Download artifact from "Get Changelog Entry" workflow
         uses: actions/download-artifact@v4
         with:
@@ -35,6 +42,14 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           run-id: ${{ steps.get-run-id.outputs.run-id }}
+
+      - name: Show downloaded files and current directory contents (Diagnostic)
+        run: |
+            echo "Listing contents of the current working directory:"
+            ls -la .
+            echo "Listing contents of .github/workflows directory:"
+            ls -la .github/workflows/
+
       - name: Check if PR exists
         id: check
         continue-on-error: true
@@ -49,7 +64,7 @@ jobs:
           if [[  $prs -gt 0  ]]; then
               echo "existing=true" >> "$GITHUB_OUTPUT"
           fi
-      - uses: actions/checkout@v4
+          
       - name: check for branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
